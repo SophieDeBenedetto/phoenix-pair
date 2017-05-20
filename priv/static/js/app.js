@@ -13956,11 +13956,16 @@ var _session = __webpack_require__(139);
 
 var _session2 = _interopRequireDefault(_session);
 
+var _registration = __webpack_require__(304);
+
+var _registration2 = _interopRequireDefault(_registration);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (0, _redux.combineReducers)({
   routing: _reduxSimpleRouter.routeReducer,
-  session: _session2.default
+  session: _session2.default,
+  registration: _registration2.default
 });
 
 /***/ }),
@@ -33814,6 +33819,44 @@ module.exports = function(module) {
 /***/ (function(module, exports) {
 
 /* (ignored) */
+
+/***/ }),
+/* 304 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.default = reducer;
+
+var _constants = __webpack_require__(77);
+
+var _constants2 = _interopRequireDefault(_constants);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var initialState = {
+  errors: null
+};
+
+function reducer() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+  var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  switch (action.type) {
+    case _constants2.default.REGISTRATIONS_ERROR:
+      return _extends({}, state, { errors: action.errors });
+
+    default:
+      return state;
+  }
+}
 
 /***/ })
 /******/ ]);
