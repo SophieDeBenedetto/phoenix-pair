@@ -20,9 +20,9 @@ const Root = ({ routerHistory, store }) => {
 
   return (
     <Provider store={store}>
-      <Router history={routerHistory}>
+      <ConnectedRouter history={routerHistory}>
         {configRoutes(store)}
-      </Router>
+      </ConnectedRouter>
     </Provider>
   );
 };

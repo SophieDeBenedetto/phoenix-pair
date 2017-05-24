@@ -10,7 +10,8 @@ export default class MainLayout extends React.Component {
   render() {
     return (
       <div>
-        {this.props.children}
+        HIIII
+        <Link to="/sign_up"> Sign UP </Link>
       </div>
     );
   }

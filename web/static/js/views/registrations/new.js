@@ -1,12 +1,11 @@
-import React   from 'react';
+import React, {Component}   from 'react';
 import { connect }          from 'react-redux';
-import { Link }             from 'react-router';
-import { withRouter }       from 'react-router-dom'
+import { Link }             from 'react-router-dom';
 
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 import Actions              from '../../actions/registrations';
 
-class RegistrationsNew extends React.Component {
+class RegistrationsNew extends Component {
   componentDidMount() {
     setDocumentTitle('Sign up');
   }
