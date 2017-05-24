@@ -27,7 +27,7 @@ var config = module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
-        query: {
+        options: {
           cacheDirectory: true,
           plugins: ['transform-decorators-legacy'],
           presets: ['react', 'es2015', 'stage-2', 'stage-0'],
@@ -35,7 +35,7 @@ var config = module.exports = {
       },
       {
         test: /\.sass$/,
-        loader: ExtractTextPlugin.extract({fallbackLoader: 'style', loader: 'css!sass?indentedSyntax&includePaths[]=' + __dirname +  '/node_modules'}),
+        loader: ExtractTextPlugin.extract({fallbackLoader: 'style', loader: 'css!sass?indentedSyntax&includePaths[]=' + __dirname +  '/node_modules'})
       },
     ],
   },
