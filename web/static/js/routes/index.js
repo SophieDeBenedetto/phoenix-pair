@@ -8,29 +8,18 @@ import ChallengesIndex              from '../views/challenges/index';
 import Actions                      from '../actions/sessions';
 
 export default function configRoutes(store) {
-  const _ensureAuthenticated = (nextState, replace, callback) => {
-    const { dispatch } = store;
-    const { session } = store.getState();
-    const { currentUser } = session;
-    debugger;
-    if (!currentUser && localStorage.getItem('phoenixAuthToken')) {
-      dispatch(Actions.currentUser());
-    } else if (!localStorage.getItem('phoenixAuthToken')) {
-      replace("/sign_in")
-    }
-    callback();
-  };
   return (
     <div>
+      <h1>Phoenix Pair</h1>
       <Route exact path="/" component={App} />
       <Route path="/sign_up" component={RegistrationsNew} />
       <Route path="/sign_in" component={SessionsNew} />
-      <PrivateRoute path="/challenges" component={ChallengesIndex} />
+      <AuthenticatedRoute path="/challenges" component={ChallengesIndex} />
     </div>
   );
 }
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
+const AuthenticatedRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={props => (
     localStorage.getItem('phoenixAuthToken') ? (
       <Component {...props}/>
