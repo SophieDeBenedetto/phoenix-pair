@@ -59,12 +59,11 @@ export function httpDelete(url) {
 }
 
 export function setDocumentTitle(title) {
-  document.title = `${title} | Phoenix Trello`;
+  document.title = `${title} | Phoenix Pair`;
 }
 
 export function renderErrorsFor(errors, ref) {
   if (!errors) return false;
-
   return errors.map((error, i) => {
     if (error[ref]) {
       return (

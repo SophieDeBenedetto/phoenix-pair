@@ -16,7 +16,7 @@ export function setCurrentUser(dispatch, user) {
   if (channel.state != 'joined') {
     channel.join().receive('ok', () => {
       dispatch({
-        type: Constants.CURRENT_USER,
+        type: Constants.SOCKET_CONNECTED,
         currentUser: user,
         socket: socket,
         channel: channel,

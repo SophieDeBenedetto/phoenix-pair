@@ -5,3 +5,5 @@ const Constants = {
   SESSIONS_ERROR: 'SESSIONS_ERROR',
   REGISTRATIONS_ERROR: 'REGISTRATIONS_ERROR'
 }
+
+export default Constants

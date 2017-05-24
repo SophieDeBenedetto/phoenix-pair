@@ -6,6 +6,7 @@ defmodule PhoenixPair.User do
     field :last_name, :string
     field :email, :string
     field :encrypted_password, :string
+    field :password, :string, virtual: true
 
     timestamps()
   end
@@ -19,6 +20,7 @@ defmodule PhoenixPair.User do
     struct
     |> cast(params, [:first_name, :last_name, :email, :password])
     |> validate_required([:first_name, :last_name, :email])
+    |> unique_constraint(:email, message: "Email already taken")
     |> generate_encrypted_password
   end 
 
