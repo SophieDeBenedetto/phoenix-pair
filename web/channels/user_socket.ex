@@ -1,6 +1,6 @@
 defmodule PhoenixPair.UserSocket do
   use Phoenix.Socket
-  alias Phoenix.{Repo, User}
+  alias PhoenixPair.{Repo, User, GuardianSerializer}
 
   ## Channels
   channel "users:*", PhoenixPair.UsersChannel

@@ -1,6 +1,7 @@
 defmodule PhoenixPair.User do
   use PhoenixPair.Web, :model
 
+  @derive {Poison.Encoder, only: [:id, :first_name, :last_name, :email]}
   schema "users" do
     field :first_name, :string
     field :last_name, :string
@@ -11,7 +12,6 @@ defmodule PhoenixPair.User do
     timestamps()
   end
 
-  @derive {Poison.Encoder, only: [:id, :first_name, :last_name, :email]}
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
@@ -20,7 +20,7 @@ defmodule PhoenixPair.User do
     struct
     |> cast(params, [:first_name, :last_name, :email, :password])
     |> validate_required([:first_name, :last_name, :email])
-    |> unique_constraint(:email, message: "Email already taken")
+    # |> unique_constraint(:email, message: "Email already taken")
     |> generate_encrypted_password
   end 
 

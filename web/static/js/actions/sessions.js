@@ -26,13 +26,10 @@ export function setCurrentUser(dispatch, user) {
 };
 
 const Actions = {
-  signIn: (email, password) => {
+  signIn: (creds) => {
     return dispatch => {
       const data = {
-        session: {
-          email: email,
-          password: password,
-        },
+        session: creds,
       };
 
       httpPost('/api/v1/sessions', data)

@@ -1,4 +1,4 @@
-defmodule PhoenixPair.UserChannel do 
+defmodule PhoenixPair.UsersChannel do 
   use PhoenixPair.Web, :channel
 
   def join("users:" <> user_id, _params, socket) do

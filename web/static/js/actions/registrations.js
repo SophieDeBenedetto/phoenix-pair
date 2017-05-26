@@ -11,7 +11,7 @@ Actions.signUp = (data) => {
     .then((data) => {
       localStorage.setItem('phoenixAuthToken', data.jwt);
       setCurrentUser(dispatch, data.user);
-      dispatch(push('/'));
+      dispatch(push('/challenges'));
     })
     .catch((error) => {
       error.response.json()

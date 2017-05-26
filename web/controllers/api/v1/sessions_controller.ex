@@ -1,4 +1,4 @@
-defmodule PhoenixPair.SessionController do 
+defmodule PhoenixPair.SessionsController do 
   use PhoenixPair.Web, :controller
 
   alias PhoenixPair.{Repo, User}
