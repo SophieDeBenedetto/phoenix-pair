@@ -11,6 +11,7 @@ defmodule PhoenixPair.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader
   end
 
   scope "/api", PhoenixPair do 

@@ -32,7 +32,7 @@ defmodule PhoenixPair.SessionsController do
   def unauthenticated(conn, _params) do 
     conn
     |> put_status(:forbidden)
-    |> render(PhoenixPair.SessionView, "forbidden.json", error: "Not Authenticated!")
+    |> render(PhoenixPair.SessionsView, "forbidden.json", error: "Not Authenticated!")
   end
 end
 

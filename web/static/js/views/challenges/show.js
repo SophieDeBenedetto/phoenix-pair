@@ -7,6 +7,7 @@ import { setDocumentTitle, renderErrorsFor } from '../../utils';
 
 class ChallengesShow extends React.Component {
   componentDidMount() {
+    debugger
     setDocumentTitle('Challenge Show');
   }
 

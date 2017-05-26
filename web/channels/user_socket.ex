@@ -1,3 +1,4 @@
+require IEx;
 defmodule PhoenixPair.UserSocket do
   use Phoenix.Socket
   alias PhoenixPair.{Repo, User, GuardianSerializer}

@@ -1,4 +1,4 @@
-defmodule PhoenixPair.ChallengeView do 
+defmodule PhoenixPair.ChallengesView do 
   use PhoenixPair.Web, :view 
 
   def render("index.json", %{challenges: challenges}) do 
