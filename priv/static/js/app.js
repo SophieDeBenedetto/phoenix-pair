@@ -2031,8 +2031,7 @@ var Constants = {
   SOCKET_CONNECTED: 'SOCKET_CONNECTED',
   CHALLENGES_RECEIVED: 'CHALLENGES_RECEIVED',
   SET_CURRENT_CHALLENGE: 'SET_CURRENT_CHALLENGE',
-  CURRENT_CHALLENGE_ADD_PARTICIPANT: 'CURRENT_CHALLENGE_ADD_PARTICIPANT',
-  CURRENT_CHALLENGE_REMOVE_PARTICIPANT: 'CURRENT_CHALLENGE_REMOVE_PARTICIPANT',
+  CURRENT_CHALLENGE_PARTICIPANTS: 'CURRENT_CHALLENGE_PARTICIPANTS',
   CURRENT_CHALLENGE_CHANNEL: 'CURRENT_CHALLENGE_CHANNEL'
 
 };
@@ -8621,39 +8620,40 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Actions = {
   connectToChannel: function connectToChannel(socket, challengeId) {
-    var channel = socket.channel('challenges:' + challengeId);
+    return function (dispatch) {
+      var channel = socket.channel('challenges:' + challengeId);
 
-    channel.join().receive('ok', function (response) {
-      dispatch({
-        type: _constants2.default.SET_CURRENT_CHALLENGE,
-        challenge: response.challenge
+      channel.join().receive('ok', function (response) {
+        dispatch({
+          type: _constants2.default.SET_CURRENT_CHALLENGE,
+          challenge: response.challenge
+        });
+
+        dispatch({
+          type: _constants2.default.CURRENT_CHALLENGE_CHANNEL,
+          channel: channel
+        });
       });
 
-      dispatch({
-        type: _constants2.default.CURRENT_CHALLENGE_CHANNEL,
-        channel: channel
+      channel.on('user:joined', function (response) {
+        dispatch({
+          type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
+          users: response.users
+        });
       });
-    });
 
-    channel.on('user:joined', function (response) {
-      debugger;
-      dispatch({
-        type: _constants2.default.CURRENT_CHALLENGE_ADD_PARTICIPANT,
-        user: response.user
+      channel.on('user:left', function (response) {
+        dispatch({
+          type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
+          users: response.users
+        });
       });
-    });
-
-    channel.on('user:left', function (response) {
-      dispatch({
-        type: _constants2.default.CURRENT_CHALLENGE_REMOVE_PARTICIPANT,
-        users: response.users
-      });
-    });
+    };
   },
 
-  addParticipant: function addParticipant(channel, userId) {
+  addParticipant: function addParticipant(channel, userId, currentParticipants) {
     return function (dispatch) {
-      channel.push('user:join', { user_id: userId });
+      channel.push('user:join', { user_id: userId, users: currentParticipants });
     };
   }
 
@@ -15380,14 +15380,10 @@ var _constants2 = _interopRequireDefault(_constants);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var initialState = {
-  currentChallenge: {
-    challenge: {},
-    participants: [],
-    channel: null
-  }
+  challenge: {},
+  participants: [],
+  channel: null
 };
 
 function reducer() {
@@ -15399,8 +15395,8 @@ function reducer() {
       return _extends({}, state, { currentChallenge: action.challenge });
     case _constants2.default.CURRENT_CHALLENGE_CHANNEL:
       return _extends({}, state, { channel: action.channel });
-    case _constants2.default.CURRENT_CHALLENGE_ADD_PARTICIPANT:
-      return _extends({}, state, { participants: [].concat(_toConsumableArray(state.participants), [action.user]) });
+    case _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS:
+      return _extends({}, state, { participants: action.users });
     default:
       return state;
   }
@@ -15630,7 +15626,6 @@ var ChallengesIndex = function (_Component) {
       var dispatch = this.props.dispatch;
       var socket = this.props.socket;
 
-      debugger;
       var challengeId = e.target.getAttribute('data-challengeid');
       dispatch(_currentChallenge2.default.connectToChannel(socket, challengeId));
     }
@@ -15670,7 +15665,6 @@ var ChallengesIndex = function (_Component) {
 }(_react.Component);
 
 function mapStateToProps(state) {
-  debugger;
   return { challenges: state.challenges, socket: state.session.socket };
 }
 
@@ -15730,13 +15724,15 @@ var ChallengesShow = function (_React$Component) {
       (0, _utils.setDocumentTitle)('Challenge Show');
       var _props = this.props,
           socket = _props.socket,
-          currentUser = _props.currentUser;
+          currentUser = _props.currentUser,
+          participants = _props.participants;
 
-      dispatch(_currentChallenge2.default.addParticipant(channel, currentUser.id));
+      dispatch(_currentChallenge2.default.addParticipant(channel, currentUser.id, participants));
     }
   }, {
     key: '_renderParticipants',
     value: function _renderParticipants() {
+      debugger;
       var participants = this.props.currentChallenge.participants;
 
 

@@ -9,11 +9,12 @@ import { setDocumentTitle, renderErrorsFor } from '../../utils';
 class ChallengesShow extends React.Component {
   componentDidMount() {
     setDocumentTitle('Challenge Show');
-    const {socket, currentUser} = this.props;
-    dispatch(Actions.addParticipant(channel, currentUser.id))
+    const {socket, currentUser, participants} = this.props;
+    dispatch(Actions.addParticipant(channel, currentUser.id, participants))
   }
 
   _renderParticipants() {
+    debugger;
     const { participants} = this.props.currentChallenge;
 
     return (

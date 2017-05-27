@@ -5,40 +5,41 @@ import { httpGet, httpPost }  from '../utils';
 
 const Actions = {
   connectToChannel: (socket, challengeId) => {
-    const channel = socket.channel(`challenges:${challengeId}`);
+    return dispatch => {
+      const channel = socket.channel(`challenges:${challengeId}`);
 
 
-    channel.join().receive('ok', (response) => {
-      dispatch({
-        type: Constants.SET_CURRENT_CHALLENGE,
-        challenge: response.challenge,
+      channel.join().receive('ok', (response) => {
+        dispatch({
+          type: Constants.SET_CURRENT_CHALLENGE,
+          challenge: response.challenge,
+        });
+
+        dispatch({
+          type: Constants.CURRENT_CHALLENGE_CHANNEL,
+          channel: channel
+        })
       });
 
-      dispatch({
-        type: Constants.CURRENT_CHALLENGE_CHANNEL,
-        channel: channel
-      })
-    });
-
-    channel.on('user:joined', (response) => {
-      debugger;
-      dispatch({
-        type: Constants.CURRENT_CHALLENGE_ADD_PARTICIPANT,
-        user: response.user,
+      channel.on('user:joined', (response) => {
+        dispatch({
+          type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
+          users: response.users,
+        });
       });
-    });
 
-    channel.on('user:left', (response) => {
-      dispatch({
-        type: Constants.CURRENT_CHALLENGE_REMOVE_PARTICIPANT,
-        users: response.users,
+      channel.on('user:left', (response) => {
+        dispatch({
+          type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
+          users: response.users,
+        });
       });
-    });
+    }
   },
 
-  addParticipant: (channel, userId) => {
+  addParticipant: (channel, userId, currentParticipants) => {
     return dispatch => {
-      channel.push('user:join', { user_id: userId })
+      channel.push('user:join', { user_id: userId, users: currentParticipants })
     };
   },
 

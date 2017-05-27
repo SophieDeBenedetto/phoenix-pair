@@ -8,10 +8,11 @@ defmodule PhoenixPair.ChallengeChannel do
     {:ok, %{challenge: challenge}, assign(socket, :challenge, challenge)}
   end
 
-  def handle_in("user:join", %{user_id: user_id}, socket) do 
+  def handle_in("user:join", %{user_id: user_id, users: users}, socket) do 
     challenge = socket.assigns.challenge
     user = Repo.get(User, id: user_id)
-    broadcast! socket, "user:joined", %{user: user}
+    users = [users | user]
+    broadcast! socket, "user:joined", %{users: users}
     {:noreply, socket}
   end
 end

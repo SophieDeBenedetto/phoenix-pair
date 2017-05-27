@@ -19,7 +19,6 @@ class ChallengesIndex extends Component {
   _connectToChannel(e) {
     const { dispatch } = this.props
     const { socket }   = this.props
-    debugger;
     var challengeId    = e.target.getAttribute('data-challengeid');
     dispatch(currentChallengeActions.connectToChannel(socket, challengeId))
   }
@@ -48,7 +47,6 @@ class ChallengesIndex extends Component {
 }
 
 function mapStateToProps(state) {
- debugger;
  return {challenges: state.challenges, socket: state.session.socket}
 }
 

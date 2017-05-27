@@ -1,11 +1,9 @@
 import Constants from '../constants';
 
 const initialState = {
-  currentChallenge: {
-    challenge: {},
-    participants: [],
-    channel: null
-  }
+  challenge: {},
+  participants: [],
+  channel: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -14,8 +12,8 @@ export default function reducer(state = initialState, action = {}) {
       return {...state, currentChallenge: action.challenge}
     case Constants.CURRENT_CHALLENGE_CHANNEL:
       return {...state, channel: action.channel}
-    case Constants.CURRENT_CHALLENGE_ADD_PARTICIPANT:
-      return {...state, participants: [...state.participants, action.user]}
+    case Constants.CURRENT_CHALLENGE_PARTICIPANTS:
+      return {...state, participants: action.users}
     default:
       return state;
   }
