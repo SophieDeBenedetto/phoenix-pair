@@ -3,7 +3,8 @@ import { connect }         from 'react-redux';
 import { Link, Route}      from 'react-router-dom';
 import ChallengesShow      from './show'
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
-import Actions              from '../../actions/challenges';
+import challengesActions        from '../../actions/challenges';
+import currentChallengeActions  from '../../actions/currentChallenge';
 
 class ChallengesIndex extends Component {
   componentDidMount() {
@@ -11,27 +12,30 @@ class ChallengesIndex extends Component {
     const { dispatch } = this.props
 
     if(this.props.challenges.length == 0)
-      dispatch(Actions.fetchChallenges())
+     
+      dispatch(challengesActions.fetchChallenges())
   }
 
-  setCurrentChallenge(e) {
+  _connectToChannel(e) {
     const { dispatch } = this.props
+    const { socket }   = this.props
+    debugger;
     var challengeId    = e.target.getAttribute('data-challengeid');
-    dispatch(Actions.setCurrentChallenge(challengeId))
+    dispatch(currentChallengeActions.connectToChannel(socket, challengeId))
   }
 
   render() {
     const { challenges } = this.props
+
     const list = challenges.map((challenge) => {
       return (
-        <li key={challenge.id} onClick={::this.setCurrentChallenge}>
+        <li key={challenge.id} onClick={::this._connectToChannel}>
           <Link to={`/challenges/${challenge.id}`} data-challengeId={challenge.id}>
             {challenge.id}
           </Link>
         </li>
-        )
-      })
-
+      )
+    })
     return(
       <div>
         <ul>
@@ -44,7 +48,8 @@ class ChallengesIndex extends Component {
 }
 
 function mapStateToProps(state) {
- return state.challenges
+ debugger;
+ return {challenges: state.challenges, socket: state.session.socket}
 }
 
 export default connect(mapStateToProps)(ChallengesIndex);

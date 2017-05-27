@@ -13,13 +13,6 @@ const Actions = {
         });
       });
     };
-  },
-
-  setCurrentChallenge: (id) => {
-    return {
-      type: Constants.SET_CURRENT_CHALLENGE,
-      currentChallengeId: id
-    }
   }
 };
 
