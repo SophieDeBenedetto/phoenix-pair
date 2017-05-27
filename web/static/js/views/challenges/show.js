@@ -7,18 +7,17 @@ import { setDocumentTitle, renderErrorsFor } from '../../utils';
 
 class ChallengesShow extends React.Component {
   componentDidMount() {
-    debugger
     setDocumentTitle('Challenge Show');
   }
 
   render() {
     const {currentChallenge} = this.props;
-    return <p>{challenge.prompt}</p>
+    return <p>{currentChallenge.prompt}</p>
   }
 }
 
 function mapStateToProps(state) {
-  return {currentChallenge: state.currentChallenge}
+  return {currentChallenge: state.challenges.currentChallenge}
 }
 
 export default withRouter(connect(mapStateToProps)(ChallengesShow));
