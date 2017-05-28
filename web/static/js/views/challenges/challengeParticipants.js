@@ -4,10 +4,6 @@ import React, {Component}   from 'react';
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 
 class ChallengeParticipants extends Component {
-  componentDidMount() {
-    
-  }
-
   _renderParticipants() {
     return this.props.participants.map((user) => {
       return (
@@ -29,9 +25,5 @@ class ChallengeParticipants extends Component {
 
 export default ChallengeParticipants
 
-// function mapStateToProps(state) {
-//   return {currentChallenge: state.challenges.currentChallenge}
-// }
 
-// export default connect(mapStateToProps)(ChallengesShow);
 

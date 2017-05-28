@@ -5,6 +5,7 @@ import ChallengesShow      from './show'
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 import challengesActions        from '../../actions/challenges';
 import currentChallengeActions  from '../../actions/currentChallenge';
+import setCurrentUser           from '../../actions/sessions';
 
 class ChallengesIndex extends Component {
   componentDidMount() {
@@ -17,10 +18,13 @@ class ChallengesIndex extends Component {
   }
 
   _connectToChannel(e) {
-    const { dispatch } = this.props
-    const { socket }   = this.props
+    const { dispatch, socket, currentUser } = this.props
     var challengeId    = e.target.getAttribute('data-challengeid');
-    dispatch(currentChallengeActions.connectToChannel(socket, challengeId))
+    if (socket)
+      dispatch(currentChallengeActions.connectToChannel(socket, challengeId))
+    else
+      debugger;
+      dispatch(sessionActions.setCurrentUser(currentUser))
   }
 
   render() {
@@ -47,7 +51,7 @@ class ChallengesIndex extends Component {
 }
 
 function mapStateToProps(state) {
- return {challenges: state.challenges, socket: state.session.socket}
+ return {challenges: state.challenges, socket: state.session.socket, currentUser: state.session.currentUser}
 }
 
 export default connect(mapStateToProps)(ChallengesIndex);
