@@ -12,7 +12,6 @@ export function setCurrentUser(dispatch, user) {
   socket.connect();
 
   const channel = socket.channel(`users:${user.id}`);
-
   if (channel.state != 'joined') {
     channel.join().receive('ok', () => {
       dispatch({

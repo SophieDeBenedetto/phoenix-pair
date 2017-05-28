@@ -8,13 +8,11 @@ const Actions = {
     return dispatch => {
       const channel = socket.channel(`challenges:${challengeId}`);
 
-
       channel.join().receive('ok', (response) => {
         dispatch({
           type: Constants.SET_CURRENT_CHALLENGE,
           challenge: response.challenge,
         });
-
         dispatch({
           type: Constants.CURRENT_CHALLENGE_CHANNEL,
           channel: channel
@@ -22,16 +20,17 @@ const Actions = {
       });
 
       channel.on('user:joined', (response) => {
+        var users = response.users.map((user) => JSON.parse(user))
         dispatch({
           type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: response.users,
+          users: users
         });
       });
 
       channel.on('user:left', (response) => {
         dispatch({
           type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: response.users,
+          users: users
         });
       });
     }

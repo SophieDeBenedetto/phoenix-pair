@@ -9,7 +9,7 @@ class ChallengeParticipants extends Component {
   }
 
   _renderParticipants() {
-    this.props.participants.map((user) => {
+    return this.props.participants.map((user) => {
       return (
         <li key={user.id}>
           {user.first_name}

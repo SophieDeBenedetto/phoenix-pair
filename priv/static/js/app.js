@@ -5236,7 +5236,6 @@ function setCurrentUser(dispatch, user) {
   socket.connect();
 
   var channel = socket.channel('users:' + user.id);
-
   if (channel.state != 'joined') {
     channel.join().receive('ok', function () {
       dispatch({
@@ -8628,7 +8627,6 @@ var Actions = {
           type: _constants2.default.SET_CURRENT_CHALLENGE,
           challenge: response.challenge
         });
-
         dispatch({
           type: _constants2.default.CURRENT_CHALLENGE_CHANNEL,
           channel: channel
@@ -8636,16 +8634,19 @@ var Actions = {
       });
 
       channel.on('user:joined', function (response) {
+        var users = response.users.map(function (user) {
+          return JSON.parse(user);
+        });
         dispatch({
           type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: response.users
+          users: users
         });
       });
 
       channel.on('user:left', function (response) {
         dispatch({
           type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: response.users
+          users: users
         });
       });
     };
@@ -15478,7 +15479,7 @@ function reducer() {
     case _constants2.default.USER_SIGNED_OUT:
       return initialState;
     case _constants2.default.SOCKET_CONNECTED:
-      return _extends({}, state, { socket: action.socket, channel: action.channel });
+      return _extends({}, state, { socket: action.socket, channel: action.channel, currentUser: action.currentUser });
     case _constants2.default.SESSION_ERROR:
       return _extends({}, state, { error: action.error });
     default:
@@ -15529,7 +15530,7 @@ var ChallengeParticipants = function (_Component) {
   }, {
     key: '_renderParticipants',
     value: function _renderParticipants() {
-      this.props.participants.map(function (user) {
+      return this.props.participants.map(function (user) {
         return _react2.default.createElement(
           'li',
           { key: user.id },
@@ -15722,17 +15723,23 @@ var ChallengesShow = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       (0, _utils.setDocumentTitle)('Challenge Show');
-      var _props = this.props,
-          socket = _props.socket,
-          currentUser = _props.currentUser,
-          participants = _props.participants;
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var channel = nextProps.channel,
+          currentUser = nextProps.currentUser,
+          currentChallenge = nextProps.currentChallenge,
+          dispatch = nextProps.dispatch;
+      var participants = currentChallenge.participants;
 
-      dispatch(_currentChallenge2.default.addParticipant(channel, currentUser.id, participants));
+      if (channel && !participants.some(function (user) {
+        return user.id === currentUser.id;
+      })) dispatch(_currentChallenge2.default.addParticipant(channel, currentUser.id, participants));
     }
   }, {
     key: '_renderParticipants',
     value: function _renderParticipants() {
-      debugger;
       var participants = this.props.currentChallenge.participants;
 
 
