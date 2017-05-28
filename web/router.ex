@@ -14,13 +14,14 @@ defmodule PhoenixPair.Router do
     plug Guardian.Plug.VerifyHeader
   end
 
-  scope "/api", PhoenixPair do 
+  scope "/api", PhoenixPair do
     pipe_through :api
 
-    scope "/v1" do 
+    scope "/v1" do
       post "/registrations", RegistrationController, :create
       post "/sessions", SessionsController, :create
       get "/challenges", ChallengesController, :index
+      get "/users/me", UsersController, :me
     end
   end
 

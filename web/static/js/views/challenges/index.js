@@ -5,26 +5,29 @@ import ChallengesShow      from './show'
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 import challengesActions        from '../../actions/challenges';
 import currentChallengeActions  from '../../actions/currentChallenge';
-import setCurrentUser           from '../../actions/sessions';
+import userActions              from '../../actions/users';
 
 class ChallengesIndex extends Component {
   componentDidMount() {
     setDocumentTitle('Challenges');
-    const { dispatch } = this.props
+    const { dispatch, socket } = this.props
 
     if(this.props.challenges.length == 0)
-     
       dispatch(challengesActions.fetchChallenges())
+
+    if (!socket)
+      dispatch(userActions.getCurrentUser())
+  }
+
+  componentWillRecieveProps(nextProps) {
+    if (!socket)
+      dispatch(userActions.getCurrentUser())
   }
 
   _connectToChannel(e) {
     const { dispatch, socket, currentUser } = this.props
     var challengeId    = e.target.getAttribute('data-challengeid');
-    if (socket)
-      dispatch(currentChallengeActions.connectToChannel(socket, challengeId))
-    else
-      debugger;
-      dispatch(sessionActions.setCurrentUser(currentUser))
+    dispatch(currentChallengeActions.connectToChannel(socket, challengeId))
   }
 
   render() {

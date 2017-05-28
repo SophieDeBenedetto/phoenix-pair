@@ -1,7 +1,7 @@
 require IEx;
 defmodule PhoenixPair.UserSocket do
   use Phoenix.Socket
-  alias PhoenixPair.{Repo, User, GuardianSerializer}
+  alias PhoenixPair.{Repo, User, GuardianSerializer, Session}
 
   ## Channels
   channel "users:*", PhoenixPair.UsersChannel
@@ -24,10 +24,10 @@ defmodule PhoenixPair.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(%{"token" => token}, socket) do
-    case Guardian.decode_and_verify(token) do 
+    case Guardian.decode_and_verify(token) do
       {:ok, claims} ->
         case GuardianSerializer.from_token(claims["sub"]) do
-          {:ok, user} -> 
+          {:ok, user} ->
             {:ok, assign(socket, :current_user, user)}
           {:error, _reason} ->
             :error
