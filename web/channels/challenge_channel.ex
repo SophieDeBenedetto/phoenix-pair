@@ -19,6 +19,18 @@ defmodule PhoenixPair.ChallengeChannel do
     {:noreply, socket}
   end
 
+  def handle_in("response:update", %{"response" => response}, socket) do
+    challenge = socket.assigns.challenge
+    |> Ecto.Changeset.change(%{response: response})
+    case Repo.update challenge do
+      {:ok, struct}       ->
+        broadcast! socket, "response:updated", %{challenge: struct}
+        {:noreply, socket}
+      {:error, changeset} ->
+        {:reply, {:error, %{error: "Error updating challenge"}}, socket}
+    end
+  end
+
   def terminate(_reason, socket) do
     challenge_id = socket.assigns.challenge.id
     user_id = socket.assigns.current_user.id

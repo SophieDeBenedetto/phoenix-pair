@@ -12,6 +12,8 @@ export default function reducer(state = initialState, action = {}) {
       return {...state, currentChallenge: action.challenge, channel: action.channel}
     case Constants.CURRENT_CHALLENGE_PARTICIPANTS:
       return {...state, participants: action.users}
+    case Constants.CURRENT_CHALLENGE_RESPONSE:
+      return {...state, currentChallenge: action.challenge}
     default:
       return state;
   }

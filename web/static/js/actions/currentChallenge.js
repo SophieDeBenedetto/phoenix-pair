@@ -26,25 +26,30 @@ const Actions = {
 
       channel.on('user:left', (response) => {
         var users = response.users.map((user) => JSON.parse(user))
-        debugger;
         dispatch({
           type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
           users: users
         });
       });
-    }
-  },
 
-  addParticipant: (channel, userId, currentParticipants) => {
-    debugger;
-    return dispatch => {
-      channel.push('user:join', { user_id: userId, users: currentParticipants })
-    };
+      channel.on("response:updated", (response) => {
+        dispatch({
+          type: Constants.CURRENT_CHALLENGE_RESPONSE,
+          challenge: response.challenge
+        });
+      })
+    }
   },
 
   removeParticipant: (channel) => {
     return dispatch => {
       channel.leave();
+    }
+  },
+
+  updateResponse: (channel, codeResponse) => {
+    return dispatch => {
+      channel.push("response:update", {response: codeResponse})
     }
   }
 

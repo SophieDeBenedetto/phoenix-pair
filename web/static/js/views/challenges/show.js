@@ -8,6 +8,11 @@ import Actions               from '../../actions/currentChallenge';
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 
 class ChallengesShow extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {challenge: {}}
+  }
+
   componentDidMount() {
     setDocumentTitle('Challenge Show');
     const {dispatch, socket, params} = this.props;
@@ -22,6 +27,7 @@ class ChallengesShow extends React.Component {
       dispatch(Actions.removeParticipant(channel));
       dispatch(Actions.connectToChannel(socket, paramId));
     }
+    this.setState({challenge: nextProps.currentChallenge.currentChallenge})
   }
 
   componentWillUnmount() {
@@ -38,15 +44,20 @@ class ChallengesShow extends React.Component {
     );
   }
 
+  updateChallengeResponse(text) {
+    const {dispatch, channel} = this.props;
+    dispatch(Actions.updateResponse(channel, text));
+  }
+
   render() {
-    const {currentChallenge, dispatch} = this.props;
+    const {channel, dispatch} = this.props;
     return (
       <div>
         {::this._renderParticipants()}
-        <p>{currentChallenge.currentChallenge.prompt}</p>
+        <p>{this.state.challenge.prompt}</p>
         <CodeResponse
-          challenge={currentChallenge.currentChallenge}
-          dispatch={dispatch}/>
+          challenge={this.state.challenge}
+          updateChallengeResponse={::this.updateChallengeResponse}/>
       </div>
     )
   }

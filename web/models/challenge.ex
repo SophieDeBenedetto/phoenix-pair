@@ -1,10 +1,11 @@
 defmodule PhoenixPair.Challenge do
   use PhoenixPair.Web, :model
 
-  @derive {Poison.Encoder, only: [:id, :prompt]}
+  @derive {Poison.Encoder, only: [:id, :prompt, :title, :response]}
   schema "challenges" do
     field :prompt, :string
-
+    field :title, :string
+    field :response, :string
     timestamps()
   end
 

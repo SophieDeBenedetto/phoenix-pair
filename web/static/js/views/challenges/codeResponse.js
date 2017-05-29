@@ -1,6 +1,4 @@
-
 import React                 from 'react';
-import { connect }           from 'react-redux';
 import Actions               from '../../actions/currentChallenge';
 
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
@@ -31,11 +29,16 @@ import 'codemirror/mode/erlang/erlang.js'
 
 
 class CodeResponse extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {challenge: {}}
+  }
+  componentWillReceiveProps(nextProps) {
+    this.setState({challenge: nextProps.challenge})
+  }
 
-  _updateChallengeResponse(e) {
-    debugger;
-    // var newText =
-    dispatch(Actions.updateResponse())
+  _updateChallengeResponse(codeText) {
+    this.props.updateChallengeResponse(codeText);
   }
 
   render() {
@@ -47,7 +50,7 @@ class CodeResponse extends React.Component {
   return (
     <div>
       <Codemirror
-        value={"hello world!"}
+        value={this.state.challenge.response}
         onChange={::this._updateChallengeResponse}
         options={options}/>
     </div>
@@ -55,4 +58,4 @@ class CodeResponse extends React.Component {
   }
 }
 
-export default CodeResponse
+export default CodeResponse;
