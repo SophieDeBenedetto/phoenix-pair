@@ -14733,17 +14733,17 @@ var ChallengesShow = function (_React$Component) {
     }
   }, {
     key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      // debugger;
-      // const {channel, currentUser, currentChallenge, dispatch} = nextProps;
-      // const {participants} = currentChallenge;
-      // if (channel) {
-      //   if (parseInt(channel.topic.split(":")[1]) != nextProps.currentChallenge.currentChallenge.id) {
-      //     dispatch(Actions.removeParticipant(channel, currentUser.id, participants))
-      //   } else if (channel && !participants.some(user => user.id === currentUser.id)) {
-      //     dispatch(Actions.addParticipant(channel, currentUser.id, participants))
-      //   }
-      // }
+    value: function componentWillReceiveProps(nextProps, nextParams) {
+      var paramId = parseInt(nextProps.match.params.id);
+      var currentChallengeId = nextProps.currentChallenge.currentChallenge.id;
+      if (paramId != currentChallengeId) {
+        var dispatch = nextProps.dispatch,
+            socket = nextProps.socket,
+            channel = nextProps.channel;
+
+        dispatch(_currentChallenge2.default.removeParticipant(channel));
+        dispatch(_currentChallenge2.default.connectToChannel(socket, paramId));
+      }
     }
   }, {
     key: 'componentWillUnmount',
@@ -14771,12 +14771,13 @@ var ChallengesShow = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         null,
+        this._renderParticipants.call(this),
         _react2.default.createElement(
           'p',
           null,
-          currentChallenge.prompt
+          currentChallenge.currentChallenge.prompt
         ),
-        this._renderParticipants.call(this)
+        _react2.default.createElement('textarea', null)
       );
     }
   }]);

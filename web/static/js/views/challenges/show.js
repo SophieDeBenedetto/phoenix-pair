@@ -13,17 +13,14 @@ class ChallengesShow extends React.Component {
     dispatch(Actions.connectToChannel(socket, params.id))
   }
 
-  componentWillReceiveProps(nextProps) {
-    // debugger;
-    // const {channel, currentUser, currentChallenge, dispatch} = nextProps;
-    // const {participants} = currentChallenge;
-    // if (channel) {
-    //   if (parseInt(channel.topic.split(":")[1]) != nextProps.currentChallenge.currentChallenge.id) {
-    //     dispatch(Actions.removeParticipant(channel, currentUser.id, participants))
-    //   } else if (channel && !participants.some(user => user.id === currentUser.id)) {
-    //     dispatch(Actions.addParticipant(channel, currentUser.id, participants))
-    //   }
-    // }
+  componentWillReceiveProps(nextProps, nextParams) {
+    var paramId = parseInt(nextProps.match.params.id)
+    var currentChallengeId = nextProps.currentChallenge.currentChallenge.id
+    if (paramId != currentChallengeId) {
+      const {dispatch, socket, channel} = nextProps;
+      dispatch(Actions.removeParticipant(channel));
+      dispatch(Actions.connectToChannel(socket, paramId));
+    }
   }
 
   componentWillUnmount() {
@@ -44,8 +41,9 @@ class ChallengesShow extends React.Component {
     const {currentChallenge} = this.props;
     return (
       <div>
-        <p>{currentChallenge.prompt}</p>
         {::this._renderParticipants()}
+        <p>{currentChallenge.currentChallenge.prompt}</p>
+        <textarea></textarea>
       </div>
     )
   }
