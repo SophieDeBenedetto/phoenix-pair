@@ -12,10 +12,16 @@ class ChallengesShow extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {channel, currentUser, currentChallenge, dispatch} = nextProps;
-    const {participants} = currentChallenge;
-    if (channel && !participants.some(user => user.id === currentUser.id))
-      dispatch(Actions.addParticipant(channel, currentUser.id, participants))
+    // debugger;
+    // const {channel, currentUser, currentChallenge, dispatch} = nextProps;
+    // const {participants} = currentChallenge;
+    // if (channel) {
+    //   if (parseInt(channel.topic.split(":")[1]) != nextProps.currentChallenge.currentChallenge.id) {
+    //     dispatch(Actions.removeParticipant(channel, currentUser.id, participants))
+    //   } else if (channel && !participants.some(user => user.id === currentUser.id)) {
+    //     dispatch(Actions.addParticipant(channel, currentUser.id, participants))
+    //   }
+    // }
   }
 
   componentWillUnmount() {
@@ -45,7 +51,6 @@ class ChallengesShow extends React.Component {
 }
 
 function mapStateToProps(state) {
-  debugger;
   return {
     currentChallenge: state.currentChallenge,
     currentUser: state.session.currentUser,

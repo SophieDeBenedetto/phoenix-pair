@@ -8332,10 +8332,7 @@ var Actions = {
       channel.join().receive('ok', function (response) {
         dispatch({
           type: _constants2.default.SET_CURRENT_CHALLENGE,
-          challenge: response.challenge
-        });
-        dispatch({
-          type: _constants2.default.CURRENT_CHALLENGE_CHANNEL,
+          challenge: response.challenge,
           channel: channel
         });
       });
@@ -8351,10 +8348,10 @@ var Actions = {
       });
 
       channel.on('user:left', function (response) {
-        debugger;
         var users = response.users.map(function (user) {
           return JSON.parse(user);
         });
+        debugger;
         dispatch({
           type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
           users: users
@@ -8364,6 +8361,7 @@ var Actions = {
   },
 
   addParticipant: function addParticipant(channel, userId, currentParticipants) {
+    debugger;
     return function (dispatch) {
       channel.push('user:join', { user_id: userId, users: currentParticipants });
     };
@@ -8371,7 +8369,7 @@ var Actions = {
 
   removeParticipant: function removeParticipant(channel, userId, currentParticipants) {
     return function (dispatch) {
-      channel.push('user:leave', { user_id: userId, users: currentParticipants });
+      channel.leave();
     };
   }
 
@@ -14386,7 +14384,7 @@ var _constants2 = _interopRequireDefault(_constants);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var initialState = {
-  challenge: {},
+  currentChallenge: {},
   participants: [],
   channel: null
 };
@@ -14397,9 +14395,7 @@ function reducer() {
 
   switch (action.type) {
     case _constants2.default.SET_CURRENT_CHALLENGE:
-      return _extends({}, state, { currentChallenge: action.challenge });
-    case _constants2.default.CURRENT_CHALLENGE_CHANNEL:
-      return _extends({}, state, { channel: action.channel });
+      return _extends({}, state, { currentChallenge: action.challenge, channel: action.channel });
     case _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS:
       return _extends({}, state, { participants: action.users });
     default:
@@ -14625,19 +14621,24 @@ var ChallengesIndex = function (_Component) {
       if (!socket) dispatch(_users2.default.getCurrentUser());
     }
   }, {
-    key: 'componentWillRecieveProps',
-    value: function componentWillRecieveProps(nextProps) {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var _props2 = this.props,
+          dispatch = _props2.dispatch,
+          socket = _props2.socket;
+
       if (!socket) dispatch(_users2.default.getCurrentUser());
     }
   }, {
     key: '_connectToChannel',
     value: function _connectToChannel(e) {
-      var _props2 = this.props,
-          dispatch = _props2.dispatch,
-          socket = _props2.socket,
-          currentUser = _props2.currentUser;
+      var _props3 = this.props,
+          dispatch = _props3.dispatch,
+          socket = _props3.socket,
+          currentUser = _props3.currentUser;
 
       var challengeId = e.target.getAttribute('data-challengeid');
+      debugger;
       dispatch(_currentChallenge2.default.connectToChannel(socket, challengeId));
     }
   }, {
@@ -14676,7 +14677,11 @@ var ChallengesIndex = function (_Component) {
 }(_react.Component);
 
 function mapStateToProps(state) {
-  return { challenges: state.challenges, socket: state.session.socket, currentUser: state.session.currentUser };
+  return {
+    challenges: state.challenges,
+    socket: state.session.socket,
+    currentUser: state.session.currentUser
+  };
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(ChallengesIndex);
@@ -14737,15 +14742,16 @@ var ChallengesShow = function (_React$Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      var channel = nextProps.channel,
-          currentUser = nextProps.currentUser,
-          currentChallenge = nextProps.currentChallenge,
-          dispatch = nextProps.dispatch;
-      var participants = currentChallenge.participants;
-
-      if (channel && !participants.some(function (user) {
-        return user.id === currentUser.id;
-      })) dispatch(_currentChallenge2.default.addParticipant(channel, currentUser.id, participants));
+      // debugger;
+      // const {channel, currentUser, currentChallenge, dispatch} = nextProps;
+      // const {participants} = currentChallenge;
+      // if (channel) {
+      //   if (parseInt(channel.topic.split(":")[1]) != nextProps.currentChallenge.currentChallenge.id) {
+      //     dispatch(Actions.removeParticipant(channel, currentUser.id, participants))
+      //   } else if (channel && !participants.some(user => user.id === currentUser.id)) {
+      //     dispatch(Actions.addParticipant(channel, currentUser.id, participants))
+      //   }
+      // }
     }
   }, {
     key: 'componentWillUnmount',
@@ -14790,7 +14796,6 @@ var ChallengesShow = function (_React$Component) {
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-  debugger;
   return {
     currentChallenge: state.currentChallenge,
     currentUser: state.session.currentUser,

@@ -1,7 +1,7 @@
 import Constants from '../constants';
 
 const initialState = {
-  challenge: {},
+  currentChallenge: {},
   participants: [],
   channel: null
 };
@@ -9,9 +9,7 @@ const initialState = {
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case Constants.SET_CURRENT_CHALLENGE:
-      return {...state, currentChallenge: action.challenge}
-    case Constants.CURRENT_CHALLENGE_CHANNEL:
-      return {...state, channel: action.channel}
+      return {...state, currentChallenge: action.challenge, channel: action.channel}
     case Constants.CURRENT_CHALLENGE_PARTICIPANTS:
       return {...state, participants: action.users}
     default:

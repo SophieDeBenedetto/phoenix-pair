@@ -12,9 +12,6 @@ const Actions = {
         dispatch({
           type: Constants.SET_CURRENT_CHALLENGE,
           challenge: response.challenge,
-        });
-        dispatch({
-          type: Constants.CURRENT_CHALLENGE_CHANNEL,
           channel: channel
         })
       });
@@ -28,8 +25,8 @@ const Actions = {
       });
 
       channel.on('user:left', (response) => {
-        debugger;
         var users = response.users.map((user) => JSON.parse(user))
+        debugger;
         dispatch({
           type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
           users: users
@@ -39,6 +36,7 @@ const Actions = {
   },
 
   addParticipant: (channel, userId, currentParticipants) => {
+    debugger;
     return dispatch => {
       channel.push('user:join', { user_id: userId, users: currentParticipants })
     };
@@ -46,7 +44,7 @@ const Actions = {
 
   removeParticipant: (channel, userId, currentParticipants) => {
     return dispatch => {
-      channel.push('user:leave', {user_id: userId, users: currentParticipants})
+      channel.leave();
     }
   }
 

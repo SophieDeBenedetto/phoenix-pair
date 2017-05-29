@@ -12,6 +12,7 @@ defmodule PhoenixPair do
       supervisor(PhoenixPair.Repo, []),
       # Start the endpoint when the application starts
       supervisor(PhoenixPair.Endpoint, []),
+      worker(PhoenixPair.ChallengeChannel.Monitor, [%{}])
       # Start your own worker by calling: PhoenixPair.Worker.start_link(arg1, arg2, arg3)
       # worker(PhoenixPair.Worker, [arg1, arg2, arg3]),
     ]

@@ -19,7 +19,8 @@ class ChallengesIndex extends Component {
       dispatch(userActions.getCurrentUser())
   }
 
-  componentWillRecieveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
+    const {dispatch, socket} = this.props;
     if (!socket)
       dispatch(userActions.getCurrentUser())
   }
@@ -27,6 +28,7 @@ class ChallengesIndex extends Component {
   _connectToChannel(e) {
     const { dispatch, socket, currentUser } = this.props
     var challengeId    = e.target.getAttribute('data-challengeid');
+    debugger;
     dispatch(currentChallengeActions.connectToChannel(socket, challengeId))
   }
 
@@ -54,7 +56,11 @@ class ChallengesIndex extends Component {
 }
 
 function mapStateToProps(state) {
- return {challenges: state.challenges, socket: state.session.socket, currentUser: state.session.currentUser}
+  return {
+    challenges: state.challenges,
+    socket: state.session.socket,
+    currentUser: state.session.currentUser
+  }
 }
 
 export default connect(mapStateToProps)(ChallengesIndex);
