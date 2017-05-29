@@ -25,20 +25,13 @@ class ChallengesIndex extends Component {
       dispatch(userActions.getCurrentUser())
   }
 
-  _connectToChannel(e) {
-    const { dispatch, socket, currentUser } = this.props
-    var challengeId    = e.target.getAttribute('data-challengeid');
-    debugger;
-    dispatch(currentChallengeActions.connectToChannel(socket, challengeId))
-  }
-
   render() {
     const { challenges } = this.props
 
     const list = challenges.map((challenge) => {
       return (
-        <li key={challenge.id} onClick={::this._connectToChannel}>
-          <Link to={`/challenges/${challenge.id}`} data-challengeId={challenge.id}>
+        <li key={challenge.id}>
+          <Link to={`/challenges/${challenge.id}`}>
             {challenge.id}
           </Link>
         </li>

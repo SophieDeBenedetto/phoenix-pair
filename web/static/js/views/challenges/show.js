@@ -9,6 +9,8 @@ import { setDocumentTitle, renderErrorsFor } from '../../utils';
 class ChallengesShow extends React.Component {
   componentDidMount() {
     setDocumentTitle('Challenge Show');
+    const {dispatch, socket, params} = this.props;
+    dispatch(Actions.connectToChannel(socket, params.id))
   }
 
   componentWillReceiveProps(nextProps) {
@@ -25,9 +27,8 @@ class ChallengesShow extends React.Component {
   }
 
   componentWillUnmount() {
-    const {channel, currentUser, currentChallenge, dispatch} = this.props;
-    const {participants} = currentChallenge;
-    dispatch(Actions.removeParticipant(channel, currentUser.id, participants))
+    const {channel, dispatch} = this.props;
+    dispatch(Actions.removeParticipant(channel))
   }
 
   _renderParticipants() {
@@ -50,11 +51,14 @@ class ChallengesShow extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, routerState) {
+  var params = routerState.match.params
   return {
     currentChallenge: state.currentChallenge,
     currentUser: state.session.currentUser,
-    channel: state.currentChallenge.channel
+    socket: state.session.socket,
+    channel: state.currentChallenge.channel,
+    params: params
   }
 }
 

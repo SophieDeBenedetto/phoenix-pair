@@ -8367,7 +8367,7 @@ var Actions = {
     };
   },
 
-  removeParticipant: function removeParticipant(channel, userId, currentParticipants) {
+  removeParticipant: function removeParticipant(channel) {
     return function (dispatch) {
       channel.leave();
     };
@@ -14630,32 +14630,18 @@ var ChallengesIndex = function (_Component) {
       if (!socket) dispatch(_users2.default.getCurrentUser());
     }
   }, {
-    key: '_connectToChannel',
-    value: function _connectToChannel(e) {
-      var _props3 = this.props,
-          dispatch = _props3.dispatch,
-          socket = _props3.socket,
-          currentUser = _props3.currentUser;
-
-      var challengeId = e.target.getAttribute('data-challengeid');
-      debugger;
-      dispatch(_currentChallenge2.default.connectToChannel(socket, challengeId));
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
-
       var challenges = this.props.challenges;
 
 
       var list = challenges.map(function (challenge) {
         return _react2.default.createElement(
           'li',
-          { key: challenge.id, onClick: _this2._connectToChannel.bind(_this2) },
+          { key: challenge.id },
           _react2.default.createElement(
             _reactRouterDom.Link,
-            { to: '/challenges/' + challenge.id, 'data-challengeId': challenge.id },
+            { to: '/challenges/' + challenge.id },
             challenge.id
           )
         );
@@ -14738,6 +14724,12 @@ var ChallengesShow = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       (0, _utils.setDocumentTitle)('Challenge Show');
+      var _props = this.props,
+          dispatch = _props.dispatch,
+          socket = _props.socket,
+          params = _props.params;
+
+      dispatch(_currentChallenge2.default.connectToChannel(socket, params.id));
     }
   }, {
     key: 'componentWillReceiveProps',
@@ -14756,14 +14748,11 @@ var ChallengesShow = function (_React$Component) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      var _props = this.props,
-          channel = _props.channel,
-          currentUser = _props.currentUser,
-          currentChallenge = _props.currentChallenge,
-          dispatch = _props.dispatch;
-      var participants = currentChallenge.participants;
+      var _props2 = this.props,
+          channel = _props2.channel,
+          dispatch = _props2.dispatch;
 
-      dispatch(_currentChallenge2.default.removeParticipant(channel, currentUser.id, participants));
+      dispatch(_currentChallenge2.default.removeParticipant(channel));
     }
   }, {
     key: '_renderParticipants',
@@ -14795,11 +14784,14 @@ var ChallengesShow = function (_React$Component) {
   return ChallengesShow;
 }(_react2.default.Component);
 
-function mapStateToProps(state) {
+function mapStateToProps(state, routerState) {
+  var params = routerState.match.params;
   return {
     currentChallenge: state.currentChallenge,
     currentUser: state.session.currentUser,
-    channel: state.currentChallenge.channel
+    socket: state.session.socket,
+    channel: state.currentChallenge.channel,
+    params: params
   };
 }
 

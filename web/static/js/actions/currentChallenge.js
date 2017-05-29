@@ -42,7 +42,7 @@ const Actions = {
     };
   },
 
-  removeParticipant: (channel, userId, currentParticipants) => {
+  removeParticipant: (channel) => {
     return dispatch => {
       channel.leave();
     }

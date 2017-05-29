@@ -1,3 +1,4 @@
+require IEx;
 defmodule PhoenixPair.ChallengeChannel.Monitor do
   use GenServer
 
@@ -20,12 +21,13 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
   end
 
   def handle_call({:user_left, challenge, user}, _from, state) do
+    challenge_id = Integer.to_string(challenge)
     new_users = state
-      |> Map.get(challenge)
+      |> Map.get(challenge_id)
       |> List.delete(user)
 
     state = state
-      |> Map.update!(challenge, fn(_) -> new_users end)
+      |> Map.update!(challenge_id, fn(_) -> new_users end)
 
     {:reply, new_users, state}
   end
