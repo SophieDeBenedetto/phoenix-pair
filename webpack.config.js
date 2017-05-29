@@ -16,7 +16,7 @@ var config = module.exports = {
   },
 
   resolve: {
-    extensions: ['.js', '.sass'],
+    extensions: ['.js', '.sass', '.css'],
     modules: ['node_modules'],
   },
 
@@ -37,6 +37,10 @@ var config = module.exports = {
         test: /\.sass$/,
         loader: ExtractTextPlugin.extract({fallbackLoader: 'style', loader: 'css!sass?indentedSyntax&includePaths[]=' + __dirname +  '/node_modules'})
       },
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      }
     ],
   },
 

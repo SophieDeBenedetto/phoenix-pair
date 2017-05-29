@@ -2,6 +2,7 @@ import React                 from 'react';
 import { connect }           from 'react-redux';
 import { Link }              from 'react-router';
 import ChallengeParticipants from './challengeParticipants';
+import CodeResponse          from './codeResponse';
 import Actions               from '../../actions/currentChallenge';
 
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
@@ -38,12 +39,14 @@ class ChallengesShow extends React.Component {
   }
 
   render() {
-    const {currentChallenge} = this.props;
+    const {currentChallenge, dispatch} = this.props;
     return (
       <div>
         {::this._renderParticipants()}
         <p>{currentChallenge.currentChallenge.prompt}</p>
-        <textarea></textarea>
+        <CodeResponse
+          challenge={currentChallenge.currentChallenge}
+          dispatch={dispatch}/>
       </div>
     )
   }
