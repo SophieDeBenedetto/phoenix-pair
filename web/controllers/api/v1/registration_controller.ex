@@ -1,4 +1,4 @@
-defmodule PhoenixPair.RegistrationController do 
+defmodule PhoenixPair.RegistrationController do
   use PhoenixPair.Web, :controller
 
   alias PhoenixPair.{Repo, User}
@@ -14,7 +14,7 @@ defmodule PhoenixPair.RegistrationController do
 
         conn
         |> put_status(:created)
-        |> render(PhoenixPair.SessionView, "show.json", jwt: jwt, user: user)
+        |> render(PhoenixPair.SessionsView, "show.json", jwt: jwt, user: user)
 
       {:error, changeset} ->
         conn

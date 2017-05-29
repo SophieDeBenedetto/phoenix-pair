@@ -14,8 +14,14 @@ class ChallengesShow extends React.Component {
   componentWillReceiveProps(nextProps) {
     const {channel, currentUser, currentChallenge, dispatch} = nextProps;
     const {participants} = currentChallenge;
-    if (channel && !participants.some(user => user.id === currentUser.id)
-)      dispatch(Actions.addParticipant(channel, currentUser.id, participants))
+    if (channel && !participants.some(user => user.id === currentUser.id))
+      dispatch(Actions.addParticipant(channel, currentUser.id, participants))
+  }
+
+  componentWillUnmount() {
+    const {channel, currentUser, currentChallenge, dispatch} = this.props;
+    const {participants} = currentChallenge;
+    dispatch(Actions.removeParticipant(channel, currentUser.id, participants))
   }
 
   _renderParticipants() {
@@ -39,9 +45,10 @@ class ChallengesShow extends React.Component {
 }
 
 function mapStateToProps(state) {
+  debugger;
   return {
-    currentChallenge: state.currentChallenge, 
-    currentUser: state.session.currentUser, 
+    currentChallenge: state.currentChallenge,
+    currentUser: state.session.currentUser,
     channel: state.currentChallenge.channel
   }
 }

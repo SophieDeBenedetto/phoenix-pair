@@ -13,9 +13,18 @@ defmodule PhoenixPair.ChallengeChannel do
     challenge = socket.assigns.challenge
     user = Repo.get(User, user_id)
     user_json = [user | users]
-      |> collect_user_json
+    |> collect_user_json
 
     broadcast! socket, "user:joined", %{users: user_json}
+    {:noreply, socket}
+  end
+
+  def handle_in("user:leave",  %{"user_id" => user_id, "users" => users}, socket) do
+    challenge = socket.assigns.challenge
+    user = Repo.get(User, user_id)
+    user_json = Enum.filter(users, fn(u) -> u["id"] != user.id end)
+    |> collect_user_json
+    broadcast! socket, "user:left", %{users: user_json}
     {:noreply, socket}
   end
 
@@ -23,12 +32,12 @@ defmodule PhoenixPair.ChallengeChannel do
     Enum.map(users, &encode_user(&1))
   end
 
-  def encode_user(user) do
-    case Poison.encode(user) do 
+  defp encode_user(user) do
+    case Poison.encode(user) do
       {:ok, user} ->
         user
       _ ->
         :error
-    end 
+    end
   end
 end

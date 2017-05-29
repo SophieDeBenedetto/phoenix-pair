@@ -28,6 +28,8 @@ const Actions = {
       });
 
       channel.on('user:left', (response) => {
+        debugger;
+        var users = response.users.map((user) => JSON.parse(user))
         dispatch({
           type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
           users: users
@@ -41,6 +43,12 @@ const Actions = {
       channel.push('user:join', { user_id: userId, users: currentParticipants })
     };
   },
+
+  removeParticipant: (channel, userId, currentParticipants) => {
+    return dispatch => {
+      channel.push('user:leave', {user_id: userId, users: currentParticipants})
+    }
+  }
 
 };
 
