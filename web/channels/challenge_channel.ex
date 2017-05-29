@@ -22,7 +22,8 @@ defmodule PhoenixPair.ChallengeChannel do
   def terminate(_reason, socket) do
     challenge_id = socket.assigns.challenge.id
     user_id = socket.assigns.current_user.id
-    broadcast! socket, "user:left", %{users: Monitor.user_left(challenge_id, user_id)}
+    users = collect_user_json(Monitor.user_left(challenge_id, user_id))
+    broadcast! socket, "user:left", %{users: users}
 
     :ok
   end
