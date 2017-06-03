@@ -33660,15 +33660,23 @@ var ChallengesIndex = function (_Component) {
       if (!socket) dispatch(_users2.default.getCurrentUser());
     }
   }, {
+    key: '_addActive',
+    value: function _addActive(e) {
+      var element = e.target.parentElement;
+      element.classList += " active";
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       var challenges = this.props.challenges;
 
 
       var list = challenges.map(function (challenge) {
         return _react2.default.createElement(
           'li',
-          { key: challenge.id },
+          { onClick: _this2._addActive.bind(_this2), key: challenge.id, className: 'list-group-item' },
           _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/challenges/' + challenge.id },
@@ -33680,9 +33688,13 @@ var ChallengesIndex = function (_Component) {
         'div',
         null,
         _react2.default.createElement(
-          'ul',
-          null,
-          list
+          'div',
+          { className: 'col-lg-3 col-md-3 col-sm-4' },
+          _react2.default.createElement(
+            'ul',
+            { className: 'list-group' },
+            list
+          )
         ),
         _react2.default.createElement(_reactRouterDom.Route, { path: '/challenges/:id', component: _show2.default })
       );

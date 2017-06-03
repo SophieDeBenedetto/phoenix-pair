@@ -25,12 +25,16 @@ class ChallengesIndex extends Component {
       dispatch(userActions.getCurrentUser())
   }
 
+  _addActive(e) {
+    var element = e.target.parentElement
+    element.classList += " active"
+  }
   render() {
     const { challenges } = this.props
 
     const list = challenges.map((challenge) => {
       return (
-        <li key={challenge.id}>
+        <li onClick={::this._addActive} key={challenge.id} className="list-group-item">
           <Link to={`/challenges/${challenge.id}`}>
             {challenge.id}
           </Link>
@@ -39,9 +43,11 @@ class ChallengesIndex extends Component {
     })
     return(
       <div>
-        <ul>
-          {list}
-        </ul>
+        <div className="col-lg-3 col-md-3 col-sm-4">
+          <ul className="list-group">
+            {list}
+          </ul>
+        </div>
         <Route path="/challenges/:id" component={ChallengesShow}/>
       </div>
     )
