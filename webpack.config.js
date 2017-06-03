@@ -45,7 +45,7 @@ var config = module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin('css/application.css'),
+    new ExtractTextPlugin('./web/static/css/application.css'),
   ],
 };
 

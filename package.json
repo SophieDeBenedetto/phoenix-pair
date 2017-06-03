@@ -30,8 +30,6 @@
     "webpack": "^2.5.1"
   },
   "dependencies": {
-    "bourbon": "^4.3.4",
-    "bourbon-neat": "^2.0.0",
     "classnames": "^2.2.5",
     "es2015": "0.0.0",
     "es6-promise": "^4.1.0",
@@ -43,6 +41,7 @@
     "phoenix_html": "file:deps/phoenix_html",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
+    "react-bootstrap": "^0.31.0",
     "react-codemirror": "git://github.com/skidding/react-codemirror.git#106-fix-update",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",

@@ -27,24 +27,32 @@ class SessionsNew extends React.Component {
     const { errors } = this.props;
 
     return (
-      <div className="view-container sessions new">
-        <main>
-          <header>
-            <div className="logo" />
-          </header>
-          <form id="sign_in_form" onSubmit={::this._handleSubmit}>
-            <div className="field">
-              <input ref="email" id="user_email" type="email" placeholder="Email" required={true} />
-              {renderErrorsFor(errors, 'email')}
-            </div>
-            <div className="field">
-              <input ref="password" id="user_password" type="password" placeholder="Password" required={true} />
-              {renderErrorsFor(errors, 'password')}
-            </div>
-            <button type="submit">Sign in</button>
+      <div className="container">
+        <div className="container">
+          <form class="form-horizontal" onSubmit={::this._handleSubmit}>
+            <fieldset>
+              <legend>Sign In</legend>
+              <div class="form-group">
+                <label for="inputEmail" class="col-lg-2 control-label">email</label>
+                <div class="col-lg-10">
+                  <input className="form-control" ref="email" id="user_email" type="text" placeholder="email" required={true} />
+                  {renderErrorsFor(errors, 'email')}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputPassword" class="col-lg-2 control-label">password</label>
+                <div class="col-lg-10">
+                  <input className="form-control" ref="password" id="user_password" type="password" placeholder="password" required={true} />
+                  {renderErrorsFor(errors, 'password')}
+                </div>
+              </div>
+              <br/>       
+            <button type="submit" className="btn btn-primary">Sign in</button>
+            </fieldset>
           </form>
           <Link to="/sign_up">Sign up</Link>
-        </main>
+      </div>
       </div>
     );
   }

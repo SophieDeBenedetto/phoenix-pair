@@ -30,36 +30,55 @@ class RegistrationsNew extends Component {
     const { errors } = this.props;
 
     return (
-      <div className="view-container registrations new">
-        <main>
-          <header>
-            <div className="logo" />
-          </header>
-          <form id="sign_up_form" onSubmit={::this._handleSubmit}>
-            <div className="field">
-              <input ref="firstName" id="user_first_name" type="text" placeholder="First name" required={true} />
-              {renderErrorsFor(errors, 'first_name')}
-            </div>
-            <div className="field">
-              <input ref="lastName" id="user_last_name" type="text" placeholder="Last name" required={true} />
-              {renderErrorsFor(errors, 'last_name')}
-            </div>
-            <div className="field">
-              <input ref="email" id="user_email" type="email" placeholder="Email" required={true} />
-              {renderErrorsFor(errors, 'email')}
-            </div>
-            <div className="field">
-              <input ref="password" id="user_password" type="password" placeholder="Password" required={true} />
-              {renderErrorsFor(errors, 'password')}
-            </div>
-            <div className="field">
-              <input ref="passwordConfirmation" id="user_password_confirmation" type="password" placeholder="Confirm password" required={true} />
-              {renderErrorsFor(errors, 'password_confirmation')}
-            </div>
-            <button type="submit">Sign up</button>
+      <div className="container">
+          <form class="form-horizontal" onSubmit={::this._handleSubmit}>
+            <fieldset>
+              <legend>Sign Up</legend>
+              <div class="form-group">
+                <label for="inputFirstName" class="col-lg-2 control-label">First Name</label>
+                <div class="col-lg-10">
+                  <input className="form-control" ref="firstName" id="user_first_name" type="text" placeholder="first name" required={true} />
+                  {renderErrorsFor(errors, 'first_name')}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputLastName" class="col-lg-2 control-label">Last Name</label>
+                <div class="col-lg-10">
+                  <input className="form-control" ref="lastName" id="user_last_name" type="text" placeholder="last name" required={true} />
+                  {renderErrorsFor(errors, 'last_name')}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputEmail" class="col-lg-2 control-label">email</label>
+                <div class="col-lg-10">
+                  <input className="form-control" ref="email" id="user_email" type="text" placeholder="email" required={true} />
+                  {renderErrorsFor(errors, 'email')}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputPassword" class="col-lg-2 control-label">password</label>
+                <div class="col-lg-10">
+                  <input className="form-control" ref="password" id="user_password" type="password" placeholder="password" required={true} />
+                  {renderErrorsFor(errors, 'password')}
+                </div>
+              </div>
+
+
+              <div class="form-group">
+                <label for="inputPasswordConfirmation" class="col-lg-2 control-label">password confirmation</label>
+                <div class="col-lg-10">
+                  <input className="form-control" ref="passwordConfirmation" id="user_password_confirmation" type="password" placeholder="password confirmation" required={true} />
+                  {renderErrorsFor(errors, 'password_confirmation')}
+                </div>
+              </div> 
+              <br/>       
+            <button type="submit" className="btn btn-primary">Sign up</button>
+            </fieldset>
           </form>
           <Link to="/sign_in">Sign in</Link>
-        </main>
       </div>
     );
   }

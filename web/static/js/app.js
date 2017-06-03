@@ -13,6 +13,8 @@ import {
   Link
 } from 'react-router-dom'
 
+import '../css/application.css'
+
 
 import configRoutes from './routes'
 import App from './views/registrations/new'

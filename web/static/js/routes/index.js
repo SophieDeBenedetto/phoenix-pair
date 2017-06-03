@@ -1,7 +1,7 @@
 import React                        from 'react';
 import { Route, Redirect, Link }    from 'react-router-dom'
 import App                          from '../containers/app';
-import Nav                          from '../views/shared/nav';
+import Navigation                          from '../views/shared/nav';
 import RegistrationsNew             from '../views/registrations/new';
 import SessionsNew                  from '../views/sessions/new';
 import ChallengesIndex              from '../views/challenges/index';
@@ -10,8 +10,7 @@ import Actions                      from '../actions/sessions';
 export default function configRoutes(store) {
   return (
     <div>
-      <h1>Phoenix Pair</h1>
-      <Nav />
+      <Navigation />
       <Route exact path="/" component={App} />
       <Route path="/sign_up" component={RegistrationsNew} />
       <Route path="/sign_in" component={SessionsNew} />

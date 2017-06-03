@@ -7,8 +7,9 @@
     <meta name="description" content="">
     <meta name="author" content="ricardo@codeloveandboards.com">
 
-    <title>Phoenix Trello</title>
+    <title>Phoenix Pair</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/application.css") %>">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
   </head>
 
   <body>

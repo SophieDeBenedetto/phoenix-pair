@@ -45,10 +45,10 @@ class CodeResponse extends React.Component {
   const options = {
      lineNumbers: true,
      mode: 'javascript',
-     theme: 'monokai'
+     theme: 'material'
   }
   return (
-    <div>
+    <div className="container">
       <Codemirror
         value={this.state.challenge.response}
         onChange={::this._updateChallengeResponse}
