@@ -33448,7 +33448,7 @@ var ChallengeParticipants = function (_Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'div',
+        'ul',
         null,
         this._renderParticipants.call(this)
       );
@@ -33565,14 +33565,10 @@ var CodeResponse = function (_React$Component) {
         mode: 'javascript',
         theme: 'material'
       };
-      return _react2.default.createElement(
-        'div',
-        { className: 'container' },
-        _react2.default.createElement(_reactCodemirror2.default, {
-          value: this.state.challenge.response,
-          onChange: this._updateChallengeResponse.bind(this),
-          options: options })
-      );
+      return _react2.default.createElement(_reactCodemirror2.default, {
+        value: this.state.challenge.response,
+        onChange: this._updateChallengeResponse.bind(this),
+        options: options });
     }
   }]);
 
@@ -33628,13 +33624,18 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var style = { margin: '3%' };
+
 var ChallengesIndex = function (_Component) {
   _inherits(ChallengesIndex, _Component);
 
-  function ChallengesIndex() {
+  function ChallengesIndex(props) {
     _classCallCheck(this, ChallengesIndex);
 
-    return _possibleConstructorReturn(this, (ChallengesIndex.__proto__ || Object.getPrototypeOf(ChallengesIndex)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (ChallengesIndex.__proto__ || Object.getPrototypeOf(ChallengesIndex)).call(this, props));
+
+    _this.state = { currentChallengeId: null };
+    return _this;
   }
 
   _createClass(ChallengesIndex, [{
@@ -33662,8 +33663,8 @@ var ChallengesIndex = function (_Component) {
   }, {
     key: '_addActive',
     value: function _addActive(e) {
-      var element = e.target.parentElement;
-      element.classList += " active";
+      var currentChallengeId = e.target.parentElement.dataset.id;
+      this.setState({ currentChallengeId: currentChallengeId });
     }
   }, {
     key: 'render',
@@ -33676,27 +33677,35 @@ var ChallengesIndex = function (_Component) {
       var list = challenges.map(function (challenge) {
         return _react2.default.createElement(
           'li',
-          { onClick: _this2._addActive.bind(_this2), key: challenge.id, className: 'list-group-item' },
+          {
+            onClick: _this2._addActive.bind(_this2),
+            'data-id': challenge.id,
+            key: challenge.id,
+            className: "list-group-item " + (_this2.state.currentChallengeId == challenge.id ? "active" : "") },
           _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/challenges/' + challenge.id },
-            challenge.id
+            challenge.title
           )
         );
       });
       return _react2.default.createElement(
         'div',
-        null,
+        { style: style },
         _react2.default.createElement(
           'div',
-          { className: 'col-lg-3 col-md-3 col-sm-4' },
+          { className: 'row' },
           _react2.default.createElement(
-            'ul',
-            { className: 'list-group' },
-            list
-          )
-        ),
-        _react2.default.createElement(_reactRouterDom.Route, { path: '/challenges/:id', component: _show2.default })
+            'div',
+            { className: 'col-lg-3 col-md-3 col-sm-4' },
+            _react2.default.createElement(
+              'ul',
+              { className: 'list-group' },
+              list
+            )
+          ),
+          _react2.default.createElement(_reactRouterDom.Route, { path: '/challenges/:id', component: _show2.default })
+        )
       );
     }
   }]);
@@ -33832,15 +33841,36 @@ var ChallengesShow = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         null,
-        this._renderParticipants.call(this),
         _react2.default.createElement(
-          'p',
-          null,
-          this.state.challenge.prompt
+          'div',
+          { className: 'col-lg-6 col-md-6 col-sm-3' },
+          _react2.default.createElement(_codeResponse2.default, {
+            challenge: this.state.challenge,
+            updateChallengeResponse: this.updateChallengeResponse.bind(this) }),
+          _react2.default.createElement(
+            'div',
+            { className: 'panel panel-info', style: { marginTop: '2%' } },
+            _react2.default.createElement(
+              'div',
+              { className: 'panel-heading' },
+              _react2.default.createElement(
+                'h3',
+                { className: 'panel-title' },
+                this.state.challenge.title
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'panel-body' },
+              this.state.challenge.prompt
+            )
+          )
         ),
-        _react2.default.createElement(_codeResponse2.default, {
-          challenge: this.state.challenge,
-          updateChallengeResponse: this.updateChallengeResponse.bind(this) })
+        _react2.default.createElement(
+          'div',
+          { className: 'col-lg-1' },
+          this._renderParticipants.call(this)
+        )
       );
     }
   }]);

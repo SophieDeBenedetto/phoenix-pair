@@ -16,9 +16,9 @@ class ChallengeParticipants extends Component {
 
   render() {
     return (
-      <div>
+      <ul>
         {::this._renderParticipants()}
-      </div>
+      </ul>
     )
   }
 }

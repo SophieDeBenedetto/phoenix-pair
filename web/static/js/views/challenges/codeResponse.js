@@ -48,12 +48,10 @@ class CodeResponse extends React.Component {
      theme: 'material'
   }
   return (
-    <div className="container">
-      <Codemirror
+    <Codemirror
         value={this.state.challenge.response}
         onChange={::this._updateChallengeResponse}
         options={options}/>
-    </div>
    )
   }
 }

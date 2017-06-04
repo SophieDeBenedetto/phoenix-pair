@@ -7,7 +7,13 @@ import challengesActions        from '../../actions/challenges';
 import currentChallengeActions  from '../../actions/currentChallenge';
 import userActions              from '../../actions/users';
 
+const style = {margin: '3%'}
+
 class ChallengesIndex extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {currentChallengeId: null}
+  }
   componentDidMount() {
     setDocumentTitle('Challenges');
     const { dispatch, socket } = this.props
@@ -26,29 +32,35 @@ class ChallengesIndex extends Component {
   }
 
   _addActive(e) {
-    var element = e.target.parentElement
-    element.classList += " active"
+    var currentChallengeId = e.target.parentElement.dataset.id;
+    this.setState({currentChallengeId: currentChallengeId})
   }
   render() {
     const { challenges } = this.props
 
     const list = challenges.map((challenge) => {
       return (
-        <li onClick={::this._addActive} key={challenge.id} className="list-group-item">
-          <Link to={`/challenges/${challenge.id}`}>
-            {challenge.id}
-          </Link>
+        <li 
+          onClick={::this._addActive} 
+          data-id={challenge.id} 
+          key={challenge.id} 
+          className={"list-group-item " + (this.state.currentChallengeId == challenge.id ? "active" : "")} >
+            <Link to={`/challenges/${challenge.id}`}>
+              {challenge.title}
+            </Link>
         </li>
       )
     })
     return(
-      <div>
-        <div className="col-lg-3 col-md-3 col-sm-4">
-          <ul className="list-group">
-            {list}
-          </ul>
+      <div style={style}>
+        <div className="row">
+          <div className="col-lg-3 col-md-3 col-sm-4">
+            <ul className="list-group">
+              {list}
+            </ul>
+          </div>
+          <Route path="/challenges/:id" component={ChallengesShow}/>
         </div>
-        <Route path="/challenges/:id" component={ChallengesShow}/>
       </div>
     )
   }

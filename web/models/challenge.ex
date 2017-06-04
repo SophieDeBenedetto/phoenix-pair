@@ -14,7 +14,7 @@ defmodule PhoenixPair.Challenge do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:prompt])
-    |> validate_required([:prompt])
+    |> cast(params, [:prompt, :title])
+    |> validate_required([:prompt, :title])
   end
 end

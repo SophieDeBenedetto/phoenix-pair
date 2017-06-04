@@ -53,11 +53,22 @@ class ChallengesShow extends React.Component {
     const {channel, dispatch} = this.props;
     return (
       <div>
-        {::this._renderParticipants()}
-        <p>{this.state.challenge.prompt}</p>
-        <CodeResponse
-          challenge={this.state.challenge}
-          updateChallengeResponse={::this.updateChallengeResponse}/>
+        <div className="col-lg-6 col-md-6 col-sm-3">
+          <CodeResponse
+            challenge={this.state.challenge}
+            updateChallengeResponse={::this.updateChallengeResponse}/>
+          <div className="panel panel-info" style={{marginTop: '2%'}}>
+            <div className="panel-heading">
+              <h3 className="panel-title">{this.state.challenge.title}</h3>
+            </div>
+            <div className="panel-body">
+              {this.state.challenge.prompt}
+            </div>
+          </div>
+        </div>
+        <div className="col-lg-1">
+          {::this._renderParticipants()}
+        </div>
       </div>
     )
   }
