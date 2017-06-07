@@ -5,9 +5,11 @@ class App extends Component {
   render() {
     return (
       <div className="container">
-        <Link to="/sign_up"> SIGN UP</Link>
-        <Link to="/sign_in"> Sign IN</Link>
-        <Link to="/challenges"> Challenges</Link>
+        <div className="jumbotron">
+          <h1>Phoenix Pair</h1>
+          <p>Collaborative coding with a React + Redux front-end and a Phoenix back-end.</p>
+          <p><Link to="/challenges" className="btn btn-primary btn-lg">start coding!</Link></p>
+        </div>
       </div>
     );
   }

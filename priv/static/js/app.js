@@ -15156,8 +15156,6 @@ var Actions = {
         dispatch({ type: _constants2.default.USER_SIGNED_OUT });
 
         dispatch((0, _reactRouterRedux.push)('/sign_in'));
-
-        dispatch({ type: _constants2.default.BOARDS_FULL_RESET });
       }).catch(function (error) {
         console.log(error);
       });
@@ -21470,7 +21468,7 @@ var SessionsNew = function (_React$Component) {
           { className: 'container' },
           _react2.default.createElement(
             'form',
-            { 'class': 'form-horizontal', onSubmit: this._handleSubmit.bind(this) },
+            { className: 'form-horizontal', onSubmit: this._handleSubmit.bind(this) },
             _react2.default.createElement(
               'fieldset',
               null,
@@ -21481,30 +21479,30 @@ var SessionsNew = function (_React$Component) {
               ),
               _react2.default.createElement(
                 'div',
-                { 'class': 'form-group' },
+                { className: 'form-group' },
                 _react2.default.createElement(
                   'label',
-                  { 'for': 'inputEmail', 'class': 'col-lg-2 control-label' },
+                  { 'for': 'inputEmail', className: 'col-lg-2 control-label' },
                   'email'
                 ),
                 _react2.default.createElement(
                   'div',
-                  { 'class': 'col-lg-10' },
+                  { className: 'col-lg-10' },
                   _react2.default.createElement('input', { className: 'form-control', ref: 'email', id: 'user_email', type: 'text', placeholder: 'email', required: true }),
                   (0, _utils.renderErrorsFor)(errors, 'email')
                 )
               ),
               _react2.default.createElement(
                 'div',
-                { 'class': 'form-group' },
+                { className: 'form-group' },
                 _react2.default.createElement(
                   'label',
-                  { 'for': 'inputPassword', 'class': 'col-lg-2 control-label' },
+                  { 'for': 'inputPassword', className: 'col-lg-2 control-label' },
                   'password'
                 ),
                 _react2.default.createElement(
                   'div',
-                  { 'class': 'col-lg-10' },
+                  { className: 'col-lg-10' },
                   _react2.default.createElement('input', { className: 'form-control', ref: 'password', id: 'user_password', type: 'password', placeholder: 'password', required: true }),
                   (0, _utils.renderErrorsFor)(errors, 'password')
                 )
@@ -33214,19 +33212,27 @@ var App = function (_Component) {
         'div',
         { className: 'container' },
         _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/sign_up' },
-          ' SIGN UP'
-        ),
-        _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/sign_in' },
-          ' Sign IN'
-        ),
-        _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/challenges' },
-          ' Challenges'
+          'div',
+          { className: 'jumbotron' },
+          _react2.default.createElement(
+            'h1',
+            null,
+            'Phoenix Pair'
+          ),
+          _react2.default.createElement(
+            'p',
+            null,
+            'Collaborative coding with a React + Redux front-end and a Phoenix back-end.'
+          ),
+          _react2.default.createElement(
+            'p',
+            null,
+            _react2.default.createElement(
+              _reactRouterDom.Link,
+              { to: '/challenges', className: 'btn btn-primary btn-lg' },
+              'start coding!'
+            )
+          )
         )
       );
     }
@@ -33439,7 +33445,7 @@ var ChallengeParticipants = function (_Component) {
       return this.props.participants.map(function (user) {
         return _react2.default.createElement(
           'li',
-          { key: user.id },
+          { key: user.id, style: { listStyle: 'none' } },
           user.first_name
         );
       });
@@ -33448,9 +33454,22 @@ var ChallengeParticipants = function (_Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'ul',
-        null,
-        this._renderParticipants.call(this)
+        'div',
+        { className: 'panel panel-danger' },
+        _react2.default.createElement(
+          'div',
+          { className: 'panel-heading' },
+          _react2.default.createElement(
+            'h3',
+            { className: 'panel-title' },
+            'Participants'
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'panel-body' },
+          this._renderParticipants.call(this)
+        )
       );
     }
   }]);
@@ -33868,7 +33887,7 @@ var ChallengesShow = function (_React$Component) {
         ),
         _react2.default.createElement(
           'div',
-          { className: 'col-lg-1' },
+          { className: 'col-lg-3' },
           this._renderParticipants.call(this)
         )
       );
@@ -33912,6 +33931,12 @@ var _reactRouterDom = __webpack_require__(43);
 
 var _reactBootstrap = __webpack_require__(450);
 
+var _reactRedux = __webpack_require__(62);
+
+var _sessions = __webpack_require__(75);
+
+var _sessions2 = _interopRequireDefault(_sessions);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -33934,6 +33959,56 @@ var Navigation = function (_Component) {
     value: function _addActive(e) {
       var element = e.target.parentElement;
       element.classList += "active";
+    }
+  }, {
+    key: '_logOut',
+    value: function _logOut(e) {
+      e.preventDefault();
+      var dispatch = this.props.dispatch;
+
+      dispatch(_sessions2.default.signOut());
+    }
+  }, {
+    key: '_authLinks',
+    value: function _authLinks() {
+      if (localStorage.getItem('phoenixAuthToken')) {
+        return _react2.default.createElement(
+          'ul',
+          { className: 'nav navbar-nav navbar-right' },
+          _react2.default.createElement(
+            'li',
+            { onClick: this._logOut.bind(this) },
+            _react2.default.createElement(
+              'a',
+              null,
+              'sign out'
+            )
+          )
+        );
+      } else {
+        return _react2.default.createElement(
+          'ul',
+          { className: 'nav navbar-nav navbar-right' },
+          _react2.default.createElement(
+            'li',
+            { onClick: this._addActive.bind(this) },
+            _react2.default.createElement(
+              _reactRouterDom.Link,
+              { to: '/sign_up' },
+              ' sign up'
+            )
+          ),
+          _react2.default.createElement(
+            'li',
+            { onClick: this._addActive.bind(this) },
+            _react2.default.createElement(
+              _reactRouterDom.Link,
+              { to: '/sign_in' },
+              ' sign in'
+            )
+          )
+        );
+      }
     }
   }, {
     key: 'render',
@@ -33965,32 +34040,11 @@ var Navigation = function (_Component) {
                 _react2.default.createElement(
                   _reactRouterDom.Link,
                   { to: '/challenges' },
-                  ' Challenges'
+                  'challenges'
                 )
               )
             ),
-            _react2.default.createElement(
-              'ul',
-              { className: 'nav navbar-nav navbar-right' },
-              _react2.default.createElement(
-                'li',
-                { onClick: this._addActive.bind(this) },
-                _react2.default.createElement(
-                  _reactRouterDom.Link,
-                  { to: '/sign_up' },
-                  ' sign up'
-                )
-              ),
-              _react2.default.createElement(
-                'li',
-                { onClick: this._addActive.bind(this) },
-                _react2.default.createElement(
-                  _reactRouterDom.Link,
-                  { to: '/sign_in' },
-                  ' sign in'
-                )
-              )
-            )
+            this._authLinks.call(this)
           )
         )
       );
@@ -34000,7 +34054,7 @@ var Navigation = function (_Component) {
   return Navigation;
 }(_react.Component);
 
-exports.default = Navigation;
+exports.default = (0, _reactRedux.connect)()(Navigation);
 
 /***/ }),
 /* 263 */

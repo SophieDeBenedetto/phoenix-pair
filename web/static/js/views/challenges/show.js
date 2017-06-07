@@ -66,7 +66,7 @@ class ChallengesShow extends React.Component {
             </div>
           </div>
         </div>
-        <div className="col-lg-1">
+        <div className="col-lg-3">
           {::this._renderParticipants()}
         </div>
       </div>

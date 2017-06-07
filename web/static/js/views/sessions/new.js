@@ -29,20 +29,20 @@ class SessionsNew extends React.Component {
     return (
       <div className="container">
         <div className="container">
-          <form class="form-horizontal" onSubmit={::this._handleSubmit}>
+          <form className="form-horizontal" onSubmit={::this._handleSubmit}>
             <fieldset>
               <legend>Sign In</legend>
-              <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">email</label>
-                <div class="col-lg-10">
+              <div className="form-group">
+                <label for="inputEmail" className="col-lg-2 control-label">email</label>
+                <div className="col-lg-10">
                   <input className="form-control" ref="email" id="user_email" type="text" placeholder="email" required={true} />
                   {renderErrorsFor(errors, 'email')}
                 </div>
               </div>
 
-              <div class="form-group">
-                <label for="inputPassword" class="col-lg-2 control-label">password</label>
-                <div class="col-lg-10">
+              <div className="form-group">
+                <label for="inputPassword" className="col-lg-2 control-label">password</label>
+                <div className="col-lg-10">
                   <input className="form-control" ref="password" id="user_password" type="password" placeholder="password" required={true} />
                   {renderErrorsFor(errors, 'password')}
                 </div>

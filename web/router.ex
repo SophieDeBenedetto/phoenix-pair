@@ -20,6 +20,7 @@ defmodule PhoenixPair.Router do
     scope "/v1" do
       post "/registrations", RegistrationController, :create
       post "/sessions", SessionsController, :create
+      delete "sessions", SessionsController, :delete
       get "/challenges", ChallengesController, :index
       get "/users/me", UsersController, :me
     end
