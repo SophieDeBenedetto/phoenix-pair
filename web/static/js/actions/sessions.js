@@ -75,7 +75,11 @@ const Actions = {
         dispatch(push('/sign_in'));
       })
       .catch(function (error) {
-        console.log(error);
+        localStorage.removeItem('phoenixAuthToken');
+
+        dispatch({ type: Constants.USER_SIGNED_OUT });
+
+        dispatch(push('/sign_in'));
       });
     };
   },

@@ -5,12 +5,28 @@ import ChallengeParticipants from './challengeParticipants';
 import CodeResponse          from './codeResponse';
 import Actions               from '../../actions/currentChallenge';
 
+const themes = [
+  'monokai',
+  'bespin',
+  '3024-day',
+  '3024-night',
+  'cobalt',
+  'eclipse',
+  'dracula',
+  'isotope',
+  'duotone',
+  'icecoder',
+  'material',
+  'midnight',
+  'solarized'
+]
+
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 
 class ChallengesShow extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {challenge: {}}
+    this.state = {challenge: {}, theme: 'monokai'}
   }
 
   componentDidMount() {
@@ -49,20 +65,41 @@ class ChallengesShow extends React.Component {
     dispatch(Actions.updateResponse(channel, text));
   }
 
+  themeOptions() {
+    return themes.map(theme => {
+      return <option>{theme}</option>
+    })
+  }
+
+  setTheme(e) {
+    this.setState({theme: e.target.value})
+  }
+
   render() {
     const {channel, dispatch} = this.props;
     return (
       <div>
         <div className="col-lg-6 col-md-6 col-sm-3">
-          <CodeResponse
-            challenge={this.state.challenge}
-            updateChallengeResponse={::this.updateChallengeResponse}/>
-          <div className="panel panel-info" style={{marginTop: '2%'}}>
-            <div className="panel-heading">
-              <h3 className="panel-title">{this.state.challenge.title}</h3>
+          <div className="row">
+            <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
+              <label className="control-label">theme</label>
+              <select className="form-control" id="select" onChange={::this.setTheme}>
+                {this.themeOptions()}
+              </select>
             </div>
-            <div className="panel-body">
-              {this.state.challenge.prompt}
+          </div>
+          <div className="row">
+            <CodeResponse
+              challenge={this.state.challenge}
+              theme={this.state.theme}
+              updateChallengeResponse={::this.updateChallengeResponse}/>
+            <div className="panel panel-info" style={{marginTop: '2%'}}>
+              <div className="panel-heading">
+                <h3 className="panel-title">{this.state.challenge.title}</h3>
+              </div>
+              <div className="panel-body">
+                {this.state.challenge.prompt}
+              </div>
             </div>
           </div>
         </div>
