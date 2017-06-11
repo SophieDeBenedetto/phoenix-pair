@@ -3,7 +3,8 @@ import Constants from '../constants';
 const initialState = {
   currentChallenge: {},
   participants: [],
-  channel: null
+  channel: null,
+  language: 'ruby'
 };
 
 export default function reducer(state = initialState, action = {}) {

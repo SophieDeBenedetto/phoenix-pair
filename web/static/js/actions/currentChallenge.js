@@ -38,6 +38,13 @@ const Actions = {
           challenge: response.challenge
         });
       })
+
+      channel.on('language:updated', (response) => {
+        dispatch({
+          type: Constants.CURRENT_CHALLENGE_LANGUAGE,
+          language: response.language
+        })
+      })
     }
   },
 
@@ -50,6 +57,12 @@ const Actions = {
   updateResponse: (channel, codeResponse) => {
     return dispatch => {
       channel.push("response:update", {response: codeResponse})
+    }
+  },
+
+  updateLanguage: (channel, language) => {
+    return dispatch => {
+      channel.push("language:update", {response: language})
     }
   }
 

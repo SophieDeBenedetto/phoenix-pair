@@ -44,7 +44,7 @@ class CodeResponse extends React.Component {
   render() {
   const options = {
      lineNumbers: true,
-     mode: 'javascript',
+     mode: this.props.language,
      theme: this.props.theme
   }
   return (

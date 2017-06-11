@@ -15,6 +15,10 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
    GenServer.call(__MODULE__, {:participant_joined, challenge, participant})
   end
 
+  def language_udpate(challenge, language) do
+    GenServer.call(__MODULE__, {:language_udpate, challenge, language})
+  end
+
 
   def user_left(challenge, user) do
     GenServer.call(__MODULE__, {:user_left, challenge, user})
@@ -37,14 +41,30 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
     state = case Map.get(state, challenge) do
       nil ->
         state = state
-        |> Map.put(challenge, [participant])
+        |> Map.put(challenge, %{participants: [participant]})
 
-        {:reply, [participant], state}
+        {:reply, %{participants: [participant]}, state}
       participants ->
         state = state
-        |> Map.put(challenge, Enum.uniq([participant | participants]))
+        participants = Enum.uniq([participant | participants])
+        |> Map.put(challenge, %{participants: participants})
 
         {:reply, Map.get(state, challenge), state}
-   end
- end
+    end
+  end
+
+  def handle_calls({:language_udpate, challenge, language}, _from, state) do 
+    state = case Map.get(state, challenge) do
+      nil ->
+        state = state
+        |> Map.put(challenge, %{language: language})
+
+        {:reply, %{language: language}, state}
+      participants ->
+        state = state
+        |> Map.put(challenge, %{language: language})
+
+        {:reply, Map.get(state, challenge), state}
+    end
+  end
 end

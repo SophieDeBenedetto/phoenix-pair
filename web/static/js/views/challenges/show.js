@@ -21,12 +21,21 @@ const themes = [
   'solarized'
 ]
 
+const languages = [
+  'javascript',
+  'ruby',
+  'swift',
+  'python',
+  'php',
+  'erlang'
+]
+
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 
 class ChallengesShow extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {challenge: {}, theme: 'monokai'}
+    this.state = {challenge: {}, theme: 'material', language: this.props.language}
   }
 
   componentDidMount() {
@@ -71,8 +80,19 @@ class ChallengesShow extends React.Component {
     })
   }
 
+  languageOptions() {
+    return languages.map(language => {
+      return <option>{language}</option>
+    })
+  }
+
   setTheme(e) {
     this.setState({theme: e.target.value})
+  }
+
+  setLanguage(e) {
+    const {dispatch, channel} = this.props;
+    dispatch(Actions.updateLanguage(channel, e.target.value))
   }
 
   render() {
@@ -87,11 +107,18 @@ class ChallengesShow extends React.Component {
                 {this.themeOptions()}
               </select>
             </div>
+            <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
+              <label className="control-label">language</label>
+              <select className="form-control" id="select" onChange={::this.setLanguage}>
+                {this.languageOptions()}
+              </select>
+            </div>
           </div>
           <div className="row">
             <CodeResponse
               challenge={this.state.challenge}
               theme={this.state.theme}
+              language={this.state.language}
               updateChallengeResponse={::this.updateChallengeResponse}/>
             <div className="panel panel-info" style={{marginTop: '2%'}}>
               <div className="panel-heading">
@@ -118,7 +145,8 @@ function mapStateToProps(state, routerState) {
     currentUser: state.session.currentUser,
     socket: state.session.socket,
     channel: state.currentChallenge.channel,
-    params: params
+    params: params,
+    language: state.currentChallenge.language
   }
 }
 

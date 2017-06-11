@@ -12453,7 +12453,8 @@ var Constants = {
   SET_CURRENT_CHALLENGE: 'SET_CURRENT_CHALLENGE',
   CURRENT_CHALLENGE_PARTICIPANTS: 'CURRENT_CHALLENGE_PARTICIPANTS',
   CURRENT_CHALLENGE_CHANNEL: 'CURRENT_CHALLENGE_CHANNEL',
-  CURRENT_CHALLENGE_RESPONSE: 'CURRENT_CHALLENGE_RESPONSE'
+  CURRENT_CHALLENGE_RESPONSE: 'CURRENT_CHALLENGE_RESPONSE',
+  CURRENT_CHALLENGE_LANGUAGE: 'CURRENT_CHALLENGE_LANGUAGE'
 
 };
 
@@ -17259,6 +17260,13 @@ var Actions = {
           challenge: response.challenge
         });
       });
+
+      channel.on('language:updated', function (response) {
+        dispatch({
+          type: _constants2.default.CURRENT_CHALLENGE_LANGUAGE,
+          language: response.language
+        });
+      });
     };
   },
 
@@ -17271,6 +17279,12 @@ var Actions = {
   updateResponse: function updateResponse(channel, codeResponse) {
     return function (dispatch) {
       channel.push("response:update", { response: codeResponse });
+    };
+  },
+
+  updateLanguage: function updateLanguage(channel, language) {
+    return function (dispatch) {
+      channel.push("language:update", { response: language });
     };
   }
 
@@ -33303,7 +33317,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var initialState = {
   currentChallenge: {},
   participants: [],
-  channel: null
+  channel: null,
+  language: 'ruby'
 };
 
 function reducer() {
@@ -33585,7 +33600,7 @@ var CodeResponse = function (_React$Component) {
     value: function render() {
       var options = {
         lineNumbers: true,
-        mode: 'javascript',
+        mode: this.props.language,
         theme: this.props.theme
       };
       return _react2.default.createElement(_reactCodemirror2.default, {
@@ -33791,6 +33806,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var themes = ['monokai', 'bespin', '3024-day', '3024-night', 'cobalt', 'eclipse', 'dracula', 'isotope', 'duotone', 'icecoder', 'material', 'midnight', 'solarized'];
 
+var languages = ['javascript', 'ruby', 'swift', 'python', 'php', 'erlang'];
+
 var ChallengesShow = function (_React$Component) {
   _inherits(ChallengesShow, _React$Component);
 
@@ -33799,7 +33816,7 @@ var ChallengesShow = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (ChallengesShow.__proto__ || Object.getPrototypeOf(ChallengesShow)).call(this, props));
 
-    _this.state = { challenge: {}, theme: 'monokai' };
+    _this.state = { challenge: {}, theme: 'material', language: _this.props.language };
     return _this;
   }
 
@@ -33868,16 +33885,36 @@ var ChallengesShow = function (_React$Component) {
       });
     }
   }, {
+    key: 'languageOptions',
+    value: function languageOptions() {
+      return languages.map(function (language) {
+        return _react2.default.createElement(
+          'option',
+          null,
+          language
+        );
+      });
+    }
+  }, {
     key: 'setTheme',
     value: function setTheme(e) {
       this.setState({ theme: e.target.value });
     }
   }, {
+    key: 'setLanguage',
+    value: function setLanguage(e) {
+      var _props4 = this.props,
+          dispatch = _props4.dispatch,
+          channel = _props4.channel;
+
+      dispatch(_currentChallenge2.default.updateLanguage(channel, e.target.value));
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _props4 = this.props,
-          channel = _props4.channel,
-          dispatch = _props4.dispatch;
+      var _props5 = this.props,
+          channel = _props5.channel,
+          dispatch = _props5.dispatch;
 
       return _react2.default.createElement(
         'div',
@@ -33901,6 +33938,20 @@ var ChallengesShow = function (_React$Component) {
                 { className: 'form-control', id: 'select', onChange: this.setTheme.bind(this) },
                 this.themeOptions()
               )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'col-lg-6 col-md-6 col-sm-3', style: { paddingLeft: '0%', marginBottom: '2%' } },
+              _react2.default.createElement(
+                'label',
+                { className: 'control-label' },
+                'language'
+              ),
+              _react2.default.createElement(
+                'select',
+                { className: 'form-control', id: 'select', onChange: this.setLanguage.bind(this) },
+                this.languageOptions()
+              )
             )
           ),
           _react2.default.createElement(
@@ -33909,6 +33960,7 @@ var ChallengesShow = function (_React$Component) {
             _react2.default.createElement(_codeResponse2.default, {
               challenge: this.state.challenge,
               theme: this.state.theme,
+              language: this.state.language,
               updateChallengeResponse: this.updateChallengeResponse.bind(this) }),
             _react2.default.createElement(
               'div',
@@ -33949,7 +34001,8 @@ function mapStateToProps(state, routerState) {
     currentUser: state.session.currentUser,
     socket: state.session.socket,
     channel: state.currentChallenge.channel,
-    params: params
+    params: params,
+    language: state.currentChallenge.language
   };
 }
 

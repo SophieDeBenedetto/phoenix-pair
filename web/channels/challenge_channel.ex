@@ -7,7 +7,7 @@ defmodule PhoenixPair.ChallengeChannel do
   def join("challenges:" <> challenge_id, _params, socket) do
     challenge = Repo.get(Challenge, challenge_id)
     user = socket.assigns.current_user
-    participant_ids = Monitor.participant_joined(challenge_id, user.id)
+    %{participants: participant_ids} = Monitor.participant_joined(challenge_id, user.id)
     send(self, {:after_join, participant_ids})
 
     {:ok, %{challenge: challenge}, assign(socket, :challenge, challenge)}
@@ -29,6 +29,11 @@ defmodule PhoenixPair.ChallengeChannel do
       {:error, changeset} ->
         {:reply, {:error, %{error: "Error updating challenge"}}, socket}
     end
+  end
+
+  def handle_in("language:update", %{"response" => response}, socket) do 
+    challenge = socket.assigns.challenge
+    Monitor.language_update(challenge.id, response)
   end
 
   def terminate(_reason, socket) do
