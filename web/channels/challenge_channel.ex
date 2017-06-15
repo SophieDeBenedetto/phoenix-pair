@@ -32,6 +32,7 @@ defmodule PhoenixPair.ChallengeChannel do
   end
 
   def handle_in("language:update", %{"response" => response}, socket) do 
+    IEx.pry
     challenge = socket.assigns.challenge
     Monitor.language_update(challenge.id, response)
   end

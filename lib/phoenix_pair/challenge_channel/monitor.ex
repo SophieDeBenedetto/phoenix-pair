@@ -8,7 +8,9 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
   # ...
 
   def start_link(initial_state) do
-   GenServer.start_link(__MODULE__, initial_state, name: __MODULE__)
+    IO.puts "INITIAL STATE"
+    IO.inspect initial_state
+    GenServer.start_link(__MODULE__, initial_state, name: __MODULE__)
   end
 
   def participant_joined(challenge, participant) do
@@ -26,30 +28,48 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
 
   def handle_call({:user_left, challenge, user}, _from, state) do
     challenge_id = Integer.to_string(challenge)
-    new_users = state
-      |> Map.get(challenge_id)
-      |> List.delete(user)
-
-    state = state
-      |> Map.update!(challenge_id, fn(_) -> new_users end)
-
+    IO.puts "INSIDE LEFT"
+    IO.inspect state
+    # %{"2" => %{participants: [29]}}
+    %{participants: participants} = state |> Map.get(challenge_id)
+    new_users = List.delete(participants, user)
+    new_challenge_state = Map.get(state, challenge_id)
+      |> Map.put(:participants, new_users)
+    state = Map.put(state, challenge_id, new_challenge_state)
+    IO.puts "new state after LEFT"
+    IO.inspect state
     {:reply, new_users, state}
   end
 
 
   def handle_call({:participant_joined, challenge, participant}, _from, state) do
+    IO.puts "inside JOINED"
+    IO.inspect state
     state = case Map.get(state, challenge) do
       nil ->
+        
         state = state
         |> Map.put(challenge, %{participants: [participant]})
-
+        IO.puts "first user JOIN"
+        IO.inspect state
         {:reply, %{participants: [participant]}, state}
-      participants ->
-        state = state
-        participants = Enum.uniq([participant | participants])
-        |> Map.put(challenge, %{participants: participants})
-
-        {:reply, Map.get(state, challenge), state}
+      data ->
+        IO.puts "second using trying to join"
+        # %{participants: [29]}
+        # :maps.find(:participants, [])
+        current_participants = Map.get(data, :participants)
+        IO.inspect current_participants
+        participants = Enum.uniq([participant | current_participants])
+        # Map.put(%{"1" => [], "2" => []}, "2", :participants, [29])
+        # maps.put(:participants, [29], [])
+        challenge_state = Map.get(state, challenge)
+        IO.puts "state right before update with new users"
+        IO.inspect state
+        new_challenge_state = Map.put(challenge_state, :participants, participants)
+        state = Map.put(state, challenge, new_challenge_state)
+        IO.puts "SECOND user JOIN"
+        IO.inspect state
+        {:reply, new_challenge_state, state}
     end
   end
 
@@ -60,9 +80,9 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
         |> Map.put(challenge, %{language: language})
 
         {:reply, %{language: language}, state}
-      participants ->
+      data ->
         state = state
-        |> Map.put(challenge, %{language: language})
+        |> Map.put(challenge, :language, language)
 
         {:reply, Map.get(state, challenge), state}
     end
