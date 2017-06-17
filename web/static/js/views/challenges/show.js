@@ -22,8 +22,8 @@ const themes = [
 ]
 
 const languages = [
-  'javascript',
   'ruby',
+  'javascript',
   'swift',
   'python',
   'php',
@@ -52,7 +52,7 @@ class ChallengesShow extends React.Component {
       dispatch(Actions.removeParticipant(channel));
       dispatch(Actions.connectToChannel(socket, paramId));
     }
-    this.setState({challenge: nextProps.currentChallenge.currentChallenge})
+    this.setState({challenge: nextProps.currentChallenge.currentChallenge, language: nextProps.language})
   }
 
   componentWillUnmount() {
@@ -109,7 +109,10 @@ class ChallengesShow extends React.Component {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
               <label className="control-label">language</label>
-              <select className="form-control" id="select" onChange={::this.setLanguage}>
+              <select 
+                className="form-control" 
+                value={this.props.language} 
+                onChange={::this.setLanguage}>
                 {this.languageOptions()}
               </select>
             </div>
@@ -130,7 +133,7 @@ class ChallengesShow extends React.Component {
             </div>
           </div>
         </div>
-        <div className="col-lg-3">
+        <div className="col-lg-3 col-md-3 col-sm-3">
           {::this._renderParticipants()}
         </div>
       </div>
