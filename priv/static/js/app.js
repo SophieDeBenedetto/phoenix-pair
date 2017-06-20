@@ -33914,7 +33914,6 @@ var ChallengesShow = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      debugger;
       var _props5 = this.props,
           channel = _props5.channel,
           dispatch = _props5.dispatch;
