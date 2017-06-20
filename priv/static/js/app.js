@@ -17238,9 +17238,11 @@ var Actions = {
         var users = response.users.map(function (user) {
           return JSON.parse(user);
         });
+        var language = response.language;
         dispatch({
           type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: users
+          users: users,
+          language: language
         });
       });
 
@@ -33329,7 +33331,7 @@ function reducer() {
     case _constants2.default.SET_CURRENT_CHALLENGE:
       return _extends({}, state, { currentChallenge: action.challenge, channel: action.channel });
     case _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS:
-      return _extends({}, state, { participants: action.users });
+      if (action.language) return _extends({}, state, { participants: action.users, language: action.language });else return _extends({}, state, { participants: action.users });
     case _constants2.default.CURRENT_CHALLENGE_RESPONSE:
       return _extends({}, state, { currentChallenge: action.challenge });
     case _constants2.default.CURRENT_CHALLENGE_LANGUAGE:

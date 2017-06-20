@@ -17,10 +17,12 @@ const Actions = {
       });
 
       channel.on('user:joined', (response) => {
-        var users = response.users.map((user) => JSON.parse(user))
+        var users    = response.users.map((user) => JSON.parse(user));
+        var language = response.language;
         dispatch({
           type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: users
+          users: users,
+          language: language
         });
       });
 
