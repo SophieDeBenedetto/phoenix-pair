@@ -35,7 +35,12 @@ import { setDocumentTitle, renderErrorsFor } from '../../utils';
 class ChallengesShow extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {challenge: {}, theme: 'material', language: this.props.language}
+    this.state = {
+      challenge: {}, 
+      theme: 'material', 
+      language: this.props.language,
+      showChat: false
+    }
   }
 
   componentDidMount() {
@@ -97,48 +102,84 @@ class ChallengesShow extends React.Component {
     dispatch(Actions.updateLanguage(channel, e.target.value))
   }
 
+  renderChat() {
+    if (this.state.showChat) {
+      return (
+        <div style={{height: "400px", marginTop: "5px", marginLeft: "15px", width: "280px"}}>
+          <div className="panel panel-info" style={{height: "300px"}}>
+            <div className="panel-heading">
+              <h3 className="panel-title">chat<span onClick={::this.toggleChat} style={{marginLeft: "87%", fontSize: "16px"}}>x</span></h3>
+            </div>
+            <div className="panel-body">
+              Panel content
+            </div>
+          </div>
+          <textArea className="form-control" style={{height: "78px"}}/>
+        </div>
+      )
+    } else {
+      return (
+        <div className="panel panel-info" style={{marginTop: "5px", marginLeft: "15px", width: "280px"}}>
+          <div className="panel-heading">
+            <h3 className="panel-title">chat<span onClick={::this.toggleChat} style={{marginLeft: "87%", fontSize: "16px"}}>+</span></h3>
+          </div>
+        </div>
+      )
+    }
+  }
+
+  toggleChat() {
+    const {showChat} = this.state;
+    this.setState({showChat: !showChat})
+  }
+
   render() {
     const {channel, dispatch} = this.props;
     return (
       <div>
-        <div className="col-lg-6 col-md-6 col-sm-3">
-          <div className="row">
-            <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
-              <label className="control-label">theme</label>
-              <select className="form-control" id="select" onChange={::this.setTheme}>
-                {this.themeOptions()}
-              </select>
-            </div>
-            <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
-              <label className="control-label">language</label>
-              <select 
-                className="form-control" 
-                value={this.props.language} 
-                onChange={::this.setLanguage}>
-                {this.languageOptions()}
-              </select>
-            </div>
-          </div>
-          <div className="row">
-            <CodeResponse
-              challenge={this.state.challenge}
-              theme={this.state.theme}
-              language={this.state.language}
-              updateChallengeResponse={::this.updateChallengeResponse}/>
-            <div className="panel panel-info" style={{marginTop: '2%'}}>
-              <div className="panel-heading">
-                <h3 className="panel-title">{this.state.challenge.title}</h3>
+        <div>
+          <div className="col-lg-6 col-md-6 col-sm-3">
+            <div className="row">
+              <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
+                <label className="control-label">theme</label>
+                <select className="form-control" id="select" onChange={::this.setTheme}>
+                  {this.themeOptions()}
+                </select>
               </div>
-              <div className="panel-body">
-                {this.state.challenge.prompt}
+              <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
+                <label className="control-label">language</label>
+                <select 
+                  className="form-control" 
+                  value={this.props.language} 
+                  onChange={::this.setLanguage}>
+                  {this.languageOptions()}
+                </select>
               </div>
             </div>
+            <div className="row">
+              <CodeResponse
+                challenge={this.state.challenge}
+                theme={this.state.theme}
+                language={this.state.language}
+                updateChallengeResponse={::this.updateChallengeResponse}/>
+              <div className="panel panel-info" style={{marginTop: '2%'}}>
+                <div className="panel-heading">
+                  <h3 className="panel-title">{this.state.challenge.title}</h3>
+                </div>
+                <div className="panel-body">
+                  {this.state.challenge.prompt}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-3 col-md-3 col-sm-3">
+            {::this._renderParticipants()}
           </div>
         </div>
-        <div className="col-lg-3 col-md-3 col-sm-3">
-          {::this._renderParticipants()}
+        <div className="row col-lg-3 col-md-3 col-sm-3">
+          {::this.renderChat()}
         </div>
-      </div>
+      </div> 
     )
   }
 }

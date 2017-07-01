@@ -33843,7 +33843,12 @@ var ChallengesShow = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (ChallengesShow.__proto__ || Object.getPrototypeOf(ChallengesShow)).call(this, props));
 
-    _this.state = { challenge: {}, theme: 'material', language: _this.props.language };
+    _this.state = {
+      challenge: {},
+      theme: 'material',
+      language: _this.props.language,
+      showChat: false
+    };
     return _this;
   }
 
@@ -33942,6 +33947,66 @@ var ChallengesShow = function (_React$Component) {
       dispatch(_currentChallenge2.default.updateLanguage(channel, e.target.value));
     }
   }, {
+    key: 'renderChat',
+    value: function renderChat() {
+      if (this.state.showChat) {
+        return _react2.default.createElement(
+          'div',
+          { style: { height: "400px", marginTop: "5px", marginLeft: "15px", width: "280px" } },
+          _react2.default.createElement(
+            'div',
+            { className: 'panel panel-info', style: { height: "300px" } },
+            _react2.default.createElement(
+              'div',
+              { className: 'panel-heading' },
+              _react2.default.createElement(
+                'h3',
+                { className: 'panel-title' },
+                'chat',
+                _react2.default.createElement(
+                  'span',
+                  { onClick: this.toggleChat.bind(this), style: { marginLeft: "87%", fontSize: "16px" } },
+                  'x'
+                )
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'panel-body' },
+              'Panel content'
+            )
+          ),
+          _react2.default.createElement('textArea', { className: 'form-control', style: { height: "78px" } })
+        );
+      } else {
+        return _react2.default.createElement(
+          'div',
+          { className: 'panel panel-info', style: { marginTop: "5px", marginLeft: "15px", width: "280px" } },
+          _react2.default.createElement(
+            'div',
+            { className: 'panel-heading' },
+            _react2.default.createElement(
+              'h3',
+              { className: 'panel-title' },
+              'chat',
+              _react2.default.createElement(
+                'span',
+                { onClick: this.toggleChat.bind(this), style: { marginLeft: "87%", fontSize: "16px" } },
+                '+'
+              )
+            )
+          )
+        );
+      }
+    }
+  }, {
+    key: 'toggleChat',
+    value: function toggleChat() {
+      var showChat = this.state.showChat;
+
+      this.setState({ showChat: !showChat });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _props5 = this.props,
@@ -33953,74 +34018,83 @@ var ChallengesShow = function (_React$Component) {
         null,
         _react2.default.createElement(
           'div',
-          { className: 'col-lg-6 col-md-6 col-sm-3' },
+          null,
           _react2.default.createElement(
             'div',
-            { className: 'row' },
+            { className: 'col-lg-6 col-md-6 col-sm-3' },
             _react2.default.createElement(
               'div',
-              { className: 'col-lg-6 col-md-6 col-sm-3', style: { paddingLeft: '0%', marginBottom: '2%' } },
+              { className: 'row' },
               _react2.default.createElement(
-                'label',
-                { className: 'control-label' },
-                'theme'
+                'div',
+                { className: 'col-lg-6 col-md-6 col-sm-3', style: { paddingLeft: '0%', marginBottom: '2%' } },
+                _react2.default.createElement(
+                  'label',
+                  { className: 'control-label' },
+                  'theme'
+                ),
+                _react2.default.createElement(
+                  'select',
+                  { className: 'form-control', id: 'select', onChange: this.setTheme.bind(this) },
+                  this.themeOptions()
+                )
               ),
               _react2.default.createElement(
-                'select',
-                { className: 'form-control', id: 'select', onChange: this.setTheme.bind(this) },
-                this.themeOptions()
+                'div',
+                { className: 'col-lg-6 col-md-6 col-sm-3', style: { paddingLeft: '0%', marginBottom: '2%' } },
+                _react2.default.createElement(
+                  'label',
+                  { className: 'control-label' },
+                  'language'
+                ),
+                _react2.default.createElement(
+                  'select',
+                  {
+                    className: 'form-control',
+                    value: this.props.language,
+                    onChange: this.setLanguage.bind(this) },
+                  this.languageOptions()
+                )
               )
             ),
             _react2.default.createElement(
               'div',
-              { className: 'col-lg-6 col-md-6 col-sm-3', style: { paddingLeft: '0%', marginBottom: '2%' } },
+              { className: 'row' },
+              _react2.default.createElement(_codeResponse2.default, {
+                challenge: this.state.challenge,
+                theme: this.state.theme,
+                language: this.state.language,
+                updateChallengeResponse: this.updateChallengeResponse.bind(this) }),
               _react2.default.createElement(
-                'label',
-                { className: 'control-label' },
-                'language'
-              ),
-              _react2.default.createElement(
-                'select',
-                {
-                  className: 'form-control',
-                  value: this.props.language,
-                  onChange: this.setLanguage.bind(this) },
-                this.languageOptions()
+                'div',
+                { className: 'panel panel-info', style: { marginTop: '2%' } },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel-heading' },
+                  _react2.default.createElement(
+                    'h3',
+                    { className: 'panel-title' },
+                    this.state.challenge.title
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel-body' },
+                  this.state.challenge.prompt
+                )
               )
             )
           ),
           _react2.default.createElement(
             'div',
-            { className: 'row' },
-            _react2.default.createElement(_codeResponse2.default, {
-              challenge: this.state.challenge,
-              theme: this.state.theme,
-              language: this.state.language,
-              updateChallengeResponse: this.updateChallengeResponse.bind(this) }),
-            _react2.default.createElement(
-              'div',
-              { className: 'panel panel-info', style: { marginTop: '2%' } },
-              _react2.default.createElement(
-                'div',
-                { className: 'panel-heading' },
-                _react2.default.createElement(
-                  'h3',
-                  { className: 'panel-title' },
-                  this.state.challenge.title
-                )
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'panel-body' },
-                this.state.challenge.prompt
-              )
-            )
+            { className: 'col-lg-3 col-md-3 col-sm-3' },
+            this._renderParticipants.call(this)
           )
         ),
         _react2.default.createElement(
           'div',
-          { className: 'col-lg-3 col-md-3 col-sm-3' },
-          this._renderParticipants.call(this)
+          { className: 'row col-lg-3 col-md-3 col-sm-3' },
+          this.renderChat.call(this)
         )
       );
     }
