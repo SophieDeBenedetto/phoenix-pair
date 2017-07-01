@@ -61,17 +61,19 @@ class ChallengesShow extends React.Component {
   }
 
   _renderParticipants() {
-    const { participants} = this.props.currentChallenge;
+    ;
+    const { participants, currentParticipant} = this.props.currentChallenge;
 
     return (
       <ChallengeParticipants
-        participants={participants}/>
+        participants={participants}
+        currentParticipant={currentParticipant}/>
     );
   }
 
   updateChallengeResponse(text) {
-    const {dispatch, channel} = this.props;
-    dispatch(Actions.updateResponse(channel, text));
+    const {dispatch, channel, currentUser} = this.props;
+    dispatch(Actions.updateResponse(channel, text, currentUser));
   }
 
   themeOptions() {

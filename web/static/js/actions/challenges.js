@@ -11,6 +11,9 @@ const Actions = {
           type: Constants.CHALLENGES_RECEIVED,
           challenges: data.challenges
         });
+      }).catch(err => {
+        if (err.message == "Forbidden")
+          dispatch(push('/sign_in'))
       });
     };
   }

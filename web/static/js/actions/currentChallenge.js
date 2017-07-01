@@ -19,10 +19,12 @@ const Actions = {
       channel.on('user:joined', (response) => {
         var users    = response.users.map((user) => JSON.parse(user));
         var language = response.language;
+        var user     = response.user;
         dispatch({
           type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
           users: users,
-          language: language
+          language: language,
+          user: user
         });
       });
 
@@ -37,7 +39,8 @@ const Actions = {
       channel.on("response:updated", (response) => {
         dispatch({
           type: Constants.CURRENT_CHALLENGE_RESPONSE,
-          challenge: response.challenge
+          challenge: response.challenge,
+          user: response.user
         });
       })
 
@@ -56,9 +59,9 @@ const Actions = {
     }
   },
 
-  updateResponse: (channel, codeResponse) => {
+  updateResponse: (channel, codeResponse, currentUser) => {
     return dispatch => {
-      channel.push("response:update", {response: codeResponse})
+      channel.push("response:update", {response: codeResponse, user: currentUser})
     }
   },
 

@@ -22,6 +22,11 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
     get_challenge_state(challenge)
   end
 
+  def current_participant_typing(challenge, user) do
+    Agent.update(__MODULE__, fn state -> do_current_participant_typing(state, challenge, user) end)
+    get_challenge_state(challenge) 
+  end
+
   ### Private helper functions
 
   defp do_participant_joined(state, challenge, participant) do 
@@ -58,6 +63,21 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
         |> Map.put(challenge, %{language: language})
       data ->
         update_state(language, state, challenge, :language)
+    end
+  end
+
+  defp do_current_participant_typing(state, challenge, user) when is_integer(challenge) do 
+    challenge_id = Integer.to_string(challenge)
+    do_current_participant_typing(state, challenge_id, user)
+  end
+
+  defp do_current_participant_typing(state, challenge, user) do
+    case state[challenge] do
+      nil ->
+        state 
+        |> Map.put(challenge, %{user: user})
+      data ->
+        update_state(user, state, challenge, :user)
     end
   end
 

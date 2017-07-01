@@ -1,16 +1,30 @@
 import React, {Component}   from 'react';
-// import { connect }          from 'react-redux';
-
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
+
+const glow = {
+  listStyle: 'none',
+  textShadow: "#6AD8C9 0 0 10px",
+  fontStyle: 'italic'
+}
+
 
 class ChallengeParticipants extends Component {
   _renderParticipants() {
     return this.props.participants.map((user) => {
-      return (
-         <li key={user.id} style={{listStyle: 'none'}}>
-          {user.first_name}
-        </li>
-      )
+        const {currentParticipant} = this.props
+        if (currentParticipant && user.id == currentParticipant.id) {
+          return (
+            <li key={user.id} style={glow} className="loading">
+            {user.first_name}
+            </li>
+          )
+        }else {
+          return (
+          <li key={user.id} style={{listStyle: 'none'}}>
+            {user.first_name}
+          </li>   
+          )
+        }
     })
   }
 

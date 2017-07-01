@@ -15,16 +15,18 @@ defmodule PhoenixPair.ChallengeChannel do
 
   def handle_info({:after_join, challenge_state}, socket) do
     users = collect_user_json(challenge_state[:participants])
-    broadcast! socket, "user:joined", %{users: users, language: challenge_state[:language]}
+    broadcast! socket, "user:joined", %{users: users, language: challenge_state[:language], user: challenge_state[:user]}
     {:noreply, socket}
   end
 
-  def handle_in("response:update", %{"response" => response}, socket) do
+  def handle_in("response:update", %{"response" => response, "user" => user}, socket) do
     challenge = socket.assigns.challenge
     |> Ecto.Changeset.change(%{response: response})
+    
     case Repo.update challenge do
       {:ok, struct}       ->
-        broadcast! socket, "response:updated", %{challenge: struct}
+        challenge_state = Monitor.current_participant_typing(struct.id, user)
+        broadcast! socket, "response:updated", %{challenge: struct, user: challenge_state[:user]}
         {:noreply, socket}
       {:error, changeset} ->
         {:reply, {:error, %{error: "Error updating challenge"}}, socket}
@@ -44,7 +46,6 @@ defmodule PhoenixPair.ChallengeChannel do
     %{participants: participant_ids} = Monitor.participant_left(challenge_id, user_id)
     users = collect_user_json(participant_ids)
     broadcast! socket, "user:left", %{users: users}
-
     :ok
   end
 
