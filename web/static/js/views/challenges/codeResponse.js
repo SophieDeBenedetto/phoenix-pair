@@ -37,22 +37,30 @@ class CodeResponse extends React.Component {
     this.setState({challenge: nextProps.challenge})
   }
 
-  _updateChallengeResponse(codeText) {
+  updateChallengeResponse(codeText) {
     this.props.updateChallengeResponse(codeText);
   }
 
-  render() {
-  const options = {
-     lineNumbers: true,
-     mode: this.props.language,
-     theme: this.props.theme
+  notTyping(e) {
+    if (!e) {
+      this.props.removeCurrentParticipantTyping()
+    }
   }
-  return (
-      <Codemirror
-        value={this.state.challenge.response}
-        onChange={::this._updateChallengeResponse}
-        options={options}/>
-   )
+
+  render() {
+    const options = {
+       lineNumbers: true,
+       mode: this.props.language,
+       theme: this.props.theme
+    }
+    return (
+        <Codemirror
+          refs="codeMirror"
+          value={this.state.challenge.response}
+          onFocusChange={::this.notTyping}
+          onChange={::this.updateChallengeResponse}
+          options={options}/>
+    )
   }
 }
 

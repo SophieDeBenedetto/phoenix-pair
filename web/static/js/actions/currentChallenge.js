@@ -49,6 +49,12 @@ const Actions = {
           type: Constants.CURRENT_CHALLENGE_LANGUAGE,
           language: response.language
         })
+      }),
+
+      channel.on('current_participant:removed', (response) => {
+        dispatch({
+          type: Constants.CURRENT_PARTICIPANT_REMOVED
+        })
       })
     }
   },
@@ -68,6 +74,12 @@ const Actions = {
   updateLanguage: (channel, language) => {
     return dispatch => {
       channel.push("language:update", {response: language})
+    }
+  },
+
+  updateCurrentParticipant: (channel) => {
+    return dispatch => {
+      channel.push("current_participant:remove", {test: "hi"})
     }
   }
 

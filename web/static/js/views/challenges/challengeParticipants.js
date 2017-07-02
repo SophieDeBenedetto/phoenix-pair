@@ -9,7 +9,7 @@ const glow = {
 
 
 class ChallengeParticipants extends Component {
-  _renderParticipants() {
+  renderParticipants() {
     return this.props.participants.map((user) => {
         const {currentParticipant} = this.props
         if (currentParticipant && user.id == currentParticipant.id) {
@@ -35,7 +35,7 @@ class ChallengeParticipants extends Component {
           <h3 className="panel-title">Participants</h3>
         </div>
         <div className="panel-body">
-          {::this._renderParticipants()}
+          {::this.renderParticipants()}
         </div>
       </div>
     )

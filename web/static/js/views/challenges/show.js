@@ -93,6 +93,11 @@ class ChallengesShow extends React.Component {
     dispatch(Actions.updateLanguage(channel, e.target.value))
   }
 
+  removeCurrentParticipantTyping(text) {
+    const {channel, dispatch} = this.props;
+    dispatch(Actions.updateCurrentParticipant(channel))
+  }
+
   render() {
     const {channel, dispatch} = this.props;
     return (
@@ -102,16 +107,17 @@ class ChallengesShow extends React.Component {
             <div className="row">
               <ThemeOptions 
                 selectedTheme={this.state.theme}
-                setTheme={this.setTheme.bind(this)}/>
+                setTheme={::this.setTheme}/>
               <LanguageOptions 
                 language={this.props.language}
-                setLanguage={this.setLanguage.bind(this)}/>
+                setLanguage={::this.setLanguage}/>
             </div>
             <div className="row">
               <CodeResponse
                 challenge={this.state.challenge}
                 theme={this.state.theme}
                 language={this.state.language}
+                removeCurrentParticipantTyping={::this.removeCurrentParticipantTyping}
                 updateChallengeResponse={::this.updateChallengeResponse}/>
               <ChallengeDetails 
                 challenge={this.state.challenge}/>

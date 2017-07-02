@@ -18,6 +18,12 @@ defmodule PhoenixPair.ChallengeChannel do
     {:noreply, socket}
   end
 
+  def handle_in("current_participant:remove", _params, socket) do
+    challenge_state = Monitor.current_participant_typing(current_challenge(socket).id, nil)
+    broadcast! socket, "current_participant:removed", %{}
+    {:noreply, socket}
+  end
+
   def handle_in("response:update", %{"response" => response, "user" => user}, socket) do
     challenge = current_challenge(socket)
     |> Ecto.Changeset.change(%{response: response})

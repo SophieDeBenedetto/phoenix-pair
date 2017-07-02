@@ -12454,7 +12454,8 @@ var Constants = {
   CURRENT_CHALLENGE_PARTICIPANTS: 'CURRENT_CHALLENGE_PARTICIPANTS',
   CURRENT_CHALLENGE_CHANNEL: 'CURRENT_CHALLENGE_CHANNEL',
   CURRENT_CHALLENGE_RESPONSE: 'CURRENT_CHALLENGE_RESPONSE',
-  CURRENT_CHALLENGE_LANGUAGE: 'CURRENT_CHALLENGE_LANGUAGE'
+  CURRENT_CHALLENGE_LANGUAGE: 'CURRENT_CHALLENGE_LANGUAGE',
+  CURRENT_PARTICIPANT_REMOVED: 'CURRENT_PARTICIPANT_REMOVED'
 
 };
 
@@ -17271,6 +17272,10 @@ var Actions = {
           type: _constants2.default.CURRENT_CHALLENGE_LANGUAGE,
           language: response.language
         });
+      }), channel.on('current_participant:removed', function (response) {
+        dispatch({
+          type: _constants2.default.CURRENT_PARTICIPANT_REMOVED
+        });
       });
     };
   },
@@ -17290,6 +17295,12 @@ var Actions = {
   updateLanguage: function updateLanguage(channel, language) {
     return function (dispatch) {
       channel.push("language:update", { response: language });
+    };
+  },
+
+  updateCurrentParticipant: function updateCurrentParticipant(channel) {
+    return function (dispatch) {
+      channel.push("current_participant:remove", { test: "hi" });
     };
   }
 
@@ -33342,6 +33353,8 @@ function reducer() {
       return _extends({}, state, { currentChallenge: action.challenge, currentParticipant: action.user });
     case _constants2.default.CURRENT_CHALLENGE_LANGUAGE:
       return _extends({}, state, { language: action.language });
+    case _constants2.default.CURRENT_PARTICIPANT_REMOVED:
+      return _extends({}, state, { currentParticipant: null });
     default:
       return state;
   }
@@ -33625,8 +33638,8 @@ var ChallengeParticipants = function (_Component) {
   }
 
   _createClass(ChallengeParticipants, [{
-    key: '_renderParticipants',
-    value: function _renderParticipants() {
+    key: 'renderParticipants',
+    value: function renderParticipants() {
       var _this2 = this;
 
       return this.props.participants.map(function (user) {
@@ -33665,7 +33678,7 @@ var ChallengeParticipants = function (_Component) {
         _react2.default.createElement(
           'div',
           { className: 'panel-body' },
-          this._renderParticipants.call(this)
+          this.renderParticipants.call(this)
         )
       );
     }
@@ -33769,9 +33782,16 @@ var CodeResponse = function (_React$Component) {
       this.setState({ challenge: nextProps.challenge });
     }
   }, {
-    key: '_updateChallengeResponse',
-    value: function _updateChallengeResponse(codeText) {
+    key: 'updateChallengeResponse',
+    value: function updateChallengeResponse(codeText) {
       this.props.updateChallengeResponse(codeText);
+    }
+  }, {
+    key: 'notTyping',
+    value: function notTyping(e) {
+      if (!e) {
+        this.props.removeCurrentParticipantTyping();
+      }
     }
   }, {
     key: 'render',
@@ -33782,8 +33802,10 @@ var CodeResponse = function (_React$Component) {
         theme: this.props.theme
       };
       return _react2.default.createElement(_reactCodemirror2.default, {
+        refs: 'codeMirror',
         value: this.state.challenge.response,
-        onChange: this._updateChallengeResponse.bind(this),
+        onFocusChange: this.notTyping.bind(this),
+        onChange: this.updateChallengeResponse.bind(this),
         options: options });
     }
   }]);
@@ -34218,11 +34240,20 @@ var ChallengesShow = function (_React$Component) {
       dispatch(_currentChallenge2.default.updateLanguage(channel, e.target.value));
     }
   }, {
-    key: 'render',
-    value: function render() {
+    key: 'removeCurrentParticipantTyping',
+    value: function removeCurrentParticipantTyping(text) {
       var _props5 = this.props,
           channel = _props5.channel,
           dispatch = _props5.dispatch;
+
+      dispatch(_currentChallenge2.default.updateCurrentParticipant(channel));
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props6 = this.props,
+          channel = _props6.channel,
+          dispatch = _props6.dispatch;
 
       return _react2.default.createElement(
         'div',
@@ -34250,6 +34281,7 @@ var ChallengesShow = function (_React$Component) {
                 challenge: this.state.challenge,
                 theme: this.state.theme,
                 language: this.state.language,
+                removeCurrentParticipantTyping: this.removeCurrentParticipantTyping.bind(this),
                 updateChallengeResponse: this.updateChallengeResponse.bind(this) }),
               _react2.default.createElement(_challengeDetails2.default, {
                 challenge: this.state.challenge })
