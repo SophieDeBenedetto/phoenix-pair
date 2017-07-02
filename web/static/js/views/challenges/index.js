@@ -14,6 +14,13 @@ class ChallengesIndex extends Component {
     super(props)
     this.state = {currentChallengeId: null}
   }
+
+  componentWillMount() {
+    if (this.props.challenges.length == 0) {
+      const {dispatch} = this.props;
+      dispatch(challengesActions.fetchChallenges())
+    }
+  }
   componentDidMount() {
     setDocumentTitle('Challenges');
     const { dispatch, socket } = this.props

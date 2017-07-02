@@ -3,32 +3,12 @@ import { connect }           from 'react-redux';
 import { Link }              from 'react-router';
 import ChallengeParticipants from './challengeParticipants';
 import CodeResponse          from './codeResponse';
+import ChallengeChat         from './challengeChat';
+import ThemeOptions          from './themeOptions';
+import LanguageOptions       from './languageOptions';
+import ChallengeDetails      from './challengeDetails';
 import Actions               from '../../actions/currentChallenge';
-
-const themes = [
-  'monokai',
-  'bespin',
-  '3024-day',
-  '3024-night',
-  'cobalt',
-  'eclipse',
-  'dracula',
-  'isotope',
-  'duotone',
-  'icecoder',
-  'material',
-  'midnight',
-  'solarized'
-]
-
-const languages = [
-  'ruby',
-  'javascript',
-  'swift',
-  'python',
-  'php',
-  'erlang'
-]
+import challengeActions      from '../../actions/challenges';
 
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 
@@ -43,19 +23,52 @@ class ChallengesShow extends React.Component {
     }
   }
 
+  componentWillMount() {
+    const {dispatch} = this.props;
+    if (this.props.challenges.length == 0) {
+      dispatch(challengeActions.fetchChallenges())
+    }
+  }
+
   componentDidMount() {
     setDocumentTitle('Challenge Show');
     const {dispatch, socket, params} = this.props;
-    dispatch(Actions.connectToChannel(socket, params.id))
+    if (socket) {
+      dispatch(Actions.connectToChannel(socket, params.id))
+    }
+  }
+
+  pageRefresh(id, challenges) {
+    return (!id && challenges.length > 0)
+  }
+
+  challengeTransition(challengeId, paramId) {
+    return (challengeId && paramId != challengeId)
+  }
+
+  subscribeAndSetState(nextProps, paramId, challenges, component) {
+    const currentChallenge = challenges.filter(c => {return c.id == this.props.params.id})[0]
+    const {dispatch, socket} = nextProps;
+    dispatch(Actions.connectToChannel(socket, paramId));
+    component.setState({challenge: currentChallenge, language: nextProps.language})
+  }
+
+  leaveAndSubscribeToNew(nextProps, paramId) {
+    const {dispatch, socket, channel} = nextProps;
+    dispatch(Actions.removeParticipant(channel));
+    dispatch(Actions.connectToChannel(socket, paramId));
   }
 
   componentWillReceiveProps(nextProps, nextParams) {
-    var paramId = parseInt(nextProps.match.params.id)
+    var paramId            = parseInt(nextProps.match.params.id)
+    const {challenges}     = this.props;
     var currentChallengeId = nextProps.currentChallenge.currentChallenge.id
-    if (paramId != currentChallengeId) {
-      const {dispatch, socket, channel} = nextProps;
-      dispatch(Actions.removeParticipant(channel));
-      dispatch(Actions.connectToChannel(socket, paramId));
+    
+    if (this.pageRefresh(currentChallengeId, challenges)) {
+      this.subscribeAndSetState(nextProps, paramId, challenges, this)
+    }
+    if (this.challengeTransition(currentChallengeId, paramId)) {
+      this.leaveAndSubscribeToNew(nextProps, paramId)
     }
     this.setState({challenge: nextProps.currentChallenge.currentChallenge, language: nextProps.language})
   }
@@ -65,72 +78,19 @@ class ChallengesShow extends React.Component {
     dispatch(Actions.removeParticipant(channel))
   }
 
-  _renderParticipants() {
-    ;
-    const { participants, currentParticipant} = this.props.currentChallenge;
-
-    return (
-      <ChallengeParticipants
-        participants={participants}
-        currentParticipant={currentParticipant}/>
-    );
-  }
-
   updateChallengeResponse(text) {
     const {dispatch, channel, currentUser} = this.props;
     dispatch(Actions.updateResponse(channel, text, currentUser));
   }
 
-  themeOptions() {
-    return themes.map(theme => {
-      return <option>{theme}</option>
-    })
+  setTheme(theme) {
+    this.setState({theme: theme})
   }
 
-  languageOptions() {
-    return languages.map(language => {
-      return <option>{language}</option>
-    })
-  }
-
-  setTheme(e) {
-    this.setState({theme: e.target.value})
-  }
 
   setLanguage(e) {
     const {dispatch, channel} = this.props;
     dispatch(Actions.updateLanguage(channel, e.target.value))
-  }
-
-  renderChat() {
-    if (this.state.showChat) {
-      return (
-        <div style={{height: "400px", marginTop: "5px", marginLeft: "15px", width: "280px"}}>
-          <div className="panel panel-info" style={{height: "300px"}}>
-            <div className="panel-heading">
-              <h3 className="panel-title">chat<span onClick={::this.toggleChat} style={{marginLeft: "87%", fontSize: "16px"}}>x</span></h3>
-            </div>
-            <div className="panel-body">
-              Panel content
-            </div>
-          </div>
-          <textArea className="form-control" style={{height: "78px"}}/>
-        </div>
-      )
-    } else {
-      return (
-        <div className="panel panel-info" style={{marginTop: "5px", marginLeft: "15px", width: "280px"}}>
-          <div className="panel-heading">
-            <h3 className="panel-title">chat<span onClick={::this.toggleChat} style={{marginLeft: "87%", fontSize: "16px"}}>+</span></h3>
-          </div>
-        </div>
-      )
-    }
-  }
-
-  toggleChat() {
-    const {showChat} = this.state;
-    this.setState({showChat: !showChat})
   }
 
   render() {
@@ -140,21 +100,12 @@ class ChallengesShow extends React.Component {
         <div>
           <div className="col-lg-6 col-md-6 col-sm-3">
             <div className="row">
-              <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
-                <label className="control-label">theme</label>
-                <select className="form-control" id="select" onChange={::this.setTheme}>
-                  {this.themeOptions()}
-                </select>
-              </div>
-              <div className="col-lg-6 col-md-6 col-sm-3" style={{paddingLeft: '0%', marginBottom: '2%'}}>
-                <label className="control-label">language</label>
-                <select 
-                  className="form-control" 
-                  value={this.props.language} 
-                  onChange={::this.setLanguage}>
-                  {this.languageOptions()}
-                </select>
-              </div>
+              <ThemeOptions 
+                selectedTheme={this.state.theme}
+                setTheme={this.setTheme.bind(this)}/>
+              <LanguageOptions 
+                language={this.props.language}
+                setLanguage={this.setLanguage.bind(this)}/>
             </div>
             <div className="row">
               <CodeResponse
@@ -162,22 +113,19 @@ class ChallengesShow extends React.Component {
                 theme={this.state.theme}
                 language={this.state.language}
                 updateChallengeResponse={::this.updateChallengeResponse}/>
-              <div className="panel panel-info" style={{marginTop: '2%'}}>
-                <div className="panel-heading">
-                  <h3 className="panel-title">{this.state.challenge.title}</h3>
-                </div>
-                <div className="panel-body">
-                  {this.state.challenge.prompt}
-                </div>
-              </div>
+              <ChallengeDetails 
+                challenge={this.state.challenge}/>
             </div>
           </div>
           <div className="col-lg-3 col-md-3 col-sm-3">
-            {::this._renderParticipants()}
+            <ChallengeParticipants
+              participants={this.props.currentChallenge.participants}
+              currentParticipant={this.props.currentChallenge.currentParticipant}/>
           </div>
         </div>
         <div className="row col-lg-3 col-md-3 col-sm-3">
-          {::this.renderChat()}
+          <ChallengeChat 
+            showChat={this.state.showChat}/>
         </div>
       </div> 
     )
@@ -187,6 +135,7 @@ class ChallengesShow extends React.Component {
 function mapStateToProps(state, routerState) {
   var params = routerState.match.params
   return {
+    challenges: state.challenges,
     currentChallenge: state.currentChallenge,
     currentUser: state.session.currentUser,
     socket: state.session.socket,
