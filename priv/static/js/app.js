@@ -33878,12 +33878,19 @@ var ChallengesIndex = function (_Component) {
     }
   }, {
     key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
+    value: function componentWillReceiveProps(nextProps, nextParams) {
       var _props2 = this.props,
           dispatch = _props2.dispatch,
           socket = _props2.socket;
 
-      if (!socket) dispatch(_users2.default.getCurrentUser());
+      if (!socket) {
+        dispatch(_users2.default.getCurrentUser());
+      }
+      if (nextProps.paramId) {
+        this.setState({ currentChallengeId: nextProps.paramId });
+      } else {
+        this.setState({ currentChallengeId: null });
+      }
     }
   }, {
     key: '_addActive',
@@ -33938,11 +33945,13 @@ var ChallengesIndex = function (_Component) {
   return ChallengesIndex;
 }(_react.Component);
 
-function mapStateToProps(state) {
+function mapStateToProps(state, routerState) {
+  var paramId = routerState.location.pathname.split("/")[2];
   return {
     challenges: state.challenges,
     socket: state.session.socket,
-    currentUser: state.session.currentUser
+    currentUser: state.session.currentUser,
+    paramId: paramId
   };
 }
 

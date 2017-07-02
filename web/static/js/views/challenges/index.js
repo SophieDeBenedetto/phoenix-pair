@@ -32,10 +32,16 @@ class ChallengesIndex extends Component {
       dispatch(userActions.getCurrentUser())
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextParams) {
     const {dispatch, socket} = this.props;
-    if (!socket)
+    if (!socket) {
       dispatch(userActions.getCurrentUser())
+    }
+    if (nextProps.paramId) {
+      this.setState({currentChallengeId: nextProps.paramId})
+    } else {
+      this.setState({currentChallengeId: null})
+    }
   }
 
   _addActive(e) {
@@ -73,11 +79,13 @@ class ChallengesIndex extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, routerState) {
+  const paramId = routerState.location.pathname.split("/")[2]
   return {
     challenges: state.challenges,
     socket: state.session.socket,
-    currentUser: state.session.currentUser
+    currentUser: state.session.currentUser,
+    paramId: paramId
   }
 }
 
