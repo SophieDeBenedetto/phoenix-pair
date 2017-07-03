@@ -2,7 +2,7 @@ defmodule PhoenixPair.Challenge do
   use PhoenixPair.Web, :model
   alias PhoenixPair.{Chat}
 
-  @derive {Poison.Encoder, only: [:id, :prompt, :title, :response]}
+  @derive {Poison.Encoder, only: [:id, :prompt, :title, :response, :chat]}
   schema "challenges" do
     field :prompt, :string
     field :title, :string

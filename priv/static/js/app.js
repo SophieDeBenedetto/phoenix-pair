@@ -12455,7 +12455,8 @@ var Constants = {
   CURRENT_CHALLENGE_CHANNEL: 'CURRENT_CHALLENGE_CHANNEL',
   CURRENT_CHALLENGE_RESPONSE: 'CURRENT_CHALLENGE_RESPONSE',
   CURRENT_CHALLENGE_LANGUAGE: 'CURRENT_CHALLENGE_LANGUAGE',
-  CURRENT_PARTICIPANT_REMOVED: 'CURRENT_PARTICIPANT_REMOVED'
+  CURRENT_PARTICIPANT_REMOVED: 'CURRENT_PARTICIPANT_REMOVED',
+  CURRENT_CHALLENGE_CHAT_MESSAGES: 'CURRENT_CHALLENGE_CHAT_MESSAGES'
 
 };
 
@@ -17276,6 +17277,11 @@ var Actions = {
         dispatch({
           type: _constants2.default.CURRENT_PARTICIPANT_REMOVED
         });
+      }), channel.on('chat:message_created', function (response) {
+        dispatch({
+          type: _constants2.default.CURRENT_CHALLENGE_CHAT_MESSAGES,
+          challenge: response.challenge
+        });
       });
     };
   },
@@ -17301,6 +17307,12 @@ var Actions = {
   updateCurrentParticipant: function updateCurrentParticipant(channel) {
     return function (dispatch) {
       channel.push("current_participant:remove", { test: "hi" });
+    };
+  },
+
+  submitChatMessage: function submitChatMessage(channel, message) {
+    return function (dispatch) {
+      channel.push("chat:create_message", { message: message });
     };
   }
 
@@ -33355,6 +33367,8 @@ function reducer() {
       return _extends({}, state, { language: action.language });
     case _constants2.default.CURRENT_PARTICIPANT_REMOVED:
       return _extends({}, state, { currentParticipant: null });
+    case _constants2.default.CURRENT_CHALLENGE_CHAT_MESSAGES:
+      return _extends({}, state, { currentChallenge: action.challenge });
     default:
       return state;
   }
@@ -33479,20 +33493,81 @@ var ChallengeChat = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (ChallengeChat.__proto__ || Object.getPrototypeOf(ChallengeChat)).call(this, props));
 
-    _this.state = { showChat: false };
+    _this.state = { showChat: false, message: null, messagesContainer: null };
     return _this;
   }
 
   _createClass(ChallengeChat, [{
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      debugger;
+      this.scrollToBottom();
+    }
+  }, {
+    key: 'scrollToBottom',
+    value: function scrollToBottom() {
+      var messagesContainer = this.messagesContainer;
+      if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }, {
     key: 'toggleChat',
     value: function toggleChat() {
       var showChat = this.state.showChat;
 
       this.setState({ showChat: !showChat });
+      this.scrollToBottom();
+    }
+  }, {
+    key: 'submitMessage',
+    value: function submitMessage(e) {
+      if (e.key === 'Enter') this.props.submitMessage(e.target.value);
+    }
+  }, {
+    key: 'renderMessages',
+    value: function renderMessages() {
+      var _this2 = this;
+
+      return this.props.messages.map(function (m) {
+        if (m.user.id == _this2.props.currentUser.id) {
+          var width = m.content.length + 100 + 'px';
+          return _react2.default.createElement(
+            'span',
+            null,
+            _react2.default.createElement(
+              'li',
+              { className: 'speech-bubble', style: { listStyle: "none", textAlign: "right", marginLeft: width } },
+              m.content
+            ),
+            _react2.default.createElement(
+              'p',
+              { style: { marginTop: "-3%", color: "#268bd2", textAlign: "right" } },
+              'me'
+            )
+          );
+        } else {
+          var _width = m.content.length + 100 + 'px';
+          return _react2.default.createElement(
+            'span',
+            null,
+            _react2.default.createElement(
+              'li',
+              { className: 'speech-bubble-other', style: { listStyle: "none", marginRight: _width } },
+              m.content
+            ),
+            _react2.default.createElement(
+              'p',
+              { style: { marginTop: "-3%", color: "#d33682" } },
+              m.user.first_name
+            )
+          );
+        }
+      });
     }
   }, {
     key: 'renderChat',
     value: function renderChat() {
+      var _this3 = this;
+
       if (this.state.showChat) {
         return _react2.default.createElement(
           'div',
@@ -33516,11 +33591,20 @@ var ChallengeChat = function (_Component) {
             ),
             _react2.default.createElement(
               'div',
-              { className: 'panel-body' },
-              'Panel content'
+              {
+                className: 'panel-body',
+                style: { height: "240px", overflowX: "scroll" },
+                ref: function ref(el) {
+                  _this3.messagesContainer = el;
+                } },
+              this.renderMessages()
             )
           ),
-          _react2.default.createElement('textArea', { className: 'form-control', style: { height: "78px" } })
+          _react2.default.createElement('textArea', {
+            className: 'form-control',
+            style: { height: "78px" },
+            value: this.state.message,
+            onKeyPress: this.submitMessage.bind(this) })
         );
       } else {
         return _react2.default.createElement(
@@ -34249,11 +34333,20 @@ var ChallengesShow = function (_React$Component) {
       dispatch(_currentChallenge2.default.updateCurrentParticipant(channel));
     }
   }, {
-    key: 'render',
-    value: function render() {
+    key: 'submitMessage',
+    value: function submitMessage(message) {
       var _props6 = this.props,
           channel = _props6.channel,
           dispatch = _props6.dispatch;
+
+      dispatch(_currentChallenge2.default.submitChatMessage(channel, message));
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props7 = this.props,
+          channel = _props7.channel,
+          dispatch = _props7.dispatch;
 
       return _react2.default.createElement(
         'div',
@@ -34299,7 +34392,10 @@ var ChallengesShow = function (_React$Component) {
           'div',
           { className: 'row col-lg-3 col-md-3 col-sm-3' },
           _react2.default.createElement(_challengeChat2.default, {
-            showChat: this.state.showChat })
+            showChat: this.state.showChat,
+            submitMessage: this.submitMessage.bind(this),
+            currentUser: this.props.currentUser,
+            messages: this.props.chat ? this.props.chat.messages : [] })
         )
       );
     }
@@ -34313,6 +34409,7 @@ function mapStateToProps(state, routerState) {
   return {
     challenges: state.challenges,
     currentChallenge: state.currentChallenge,
+    chat: state.currentChallenge.currentChallenge.chat,
     currentUser: state.session.currentUser,
     socket: state.session.socket,
     channel: state.currentChallenge.channel,

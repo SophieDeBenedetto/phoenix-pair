@@ -55,6 +55,13 @@ const Actions = {
         dispatch({
           type: Constants.CURRENT_PARTICIPANT_REMOVED
         })
+      }),
+
+      channel.on('chat:message_created', (response) => {
+        dispatch({
+          type: Constants.CURRENT_CHALLENGE_CHAT_MESSAGES,
+          challenge: response.challenge
+        })
       })
     }
   },
@@ -80,6 +87,12 @@ const Actions = {
   updateCurrentParticipant: (channel) => {
     return dispatch => {
       channel.push("current_participant:remove", {test: "hi"})
+    }
+  },
+
+  submitChatMessage: (channel, message) => {
+    return dispatch => {
+      channel.push("chat:create_message", {message: message})
     }
   }
 

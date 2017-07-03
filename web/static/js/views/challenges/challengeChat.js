@@ -6,11 +6,52 @@ class ChallengeChat extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {showChat: false}
+    this.state = {showChat: false, message: null, messagesContainer: null}
   }
+
+  componentDidUpdate() {
+    debugger;
+    this.scrollToBottom()
+  }
+
+  scrollToBottom() {
+    const messagesContainer = this.messagesContainer;
+    if (messagesContainer)
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  };
+
   toggleChat() {
     const {showChat} = this.state;
     this.setState({showChat: !showChat})
+    this.scrollToBottom();
+  }
+
+  submitMessage(e) {
+    if (e.key === 'Enter')
+      this.props.submitMessage(e.target.value)
+
+  }
+
+  renderMessages() {
+    return this.props.messages.map(m => {
+      if (m.user.id == this.props.currentUser.id) {
+        const width = `${m.content.length + 100}px`   
+        return(
+          <span>
+            <li className="speech-bubble" style={{listStyle: "none", textAlign: "right", marginLeft: width}}>{m.content}</li>
+            <p style={{marginTop: "-3%", color: "#268bd2", textAlign: "right"}}>me</p>
+          </span>
+        )
+      } else {
+        const width = `${m.content.length + 100}px`
+        return(
+          <span>
+            <li className="speech-bubble-other" style={{listStyle: "none", marginRight: width}}>{m.content}</li>
+            <p style={{marginTop: "-3%", color: "#d33682"}}>{m.user.first_name}</p>
+          </span>
+        )
+      }
+    })
   }
 
   renderChat() {
@@ -21,11 +62,18 @@ class ChallengeChat extends Component {
             <div className="panel-heading">
               <h3 className="panel-title">chat<span onClick={::this.toggleChat} style={{marginLeft: "87%", fontSize: "16px"}}>x</span></h3>
             </div>
-            <div className="panel-body">
-              Panel content
+            <div 
+              className="panel-body" 
+              style={{height: "240px", overflowX: "scroll"}}
+              ref={(el) => { this.messagesContainer = el; }}>
+              {this.renderMessages()}
             </div>
           </div>
-          <textArea className="form-control" style={{height: "78px"}}/>
+          <textArea 
+            className="form-control" 
+            style={{height: "78px"}}
+            value={this.state.message}
+            onKeyPress={::this.submitMessage}/>
         </div>
       )
     } else {

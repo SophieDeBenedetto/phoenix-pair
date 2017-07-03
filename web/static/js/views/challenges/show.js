@@ -98,6 +98,11 @@ class ChallengesShow extends React.Component {
     dispatch(Actions.updateCurrentParticipant(channel))
   }
 
+  submitMessage(message) {
+    const {channel, dispatch} = this.props;
+    dispatch(Actions.submitChatMessage(channel, message))
+  }
+
   render() {
     const {channel, dispatch} = this.props;
     return (
@@ -131,7 +136,10 @@ class ChallengesShow extends React.Component {
         </div>
         <div className="row col-lg-3 col-md-3 col-sm-3">
           <ChallengeChat 
-            showChat={this.state.showChat}/>
+            showChat={this.state.showChat}
+            submitMessage={::this.submitMessage}
+            currentUser={this.props.currentUser}
+            messages={this.props.chat ? this.props.chat.messages : []}/>
         </div>
       </div> 
     )
@@ -143,6 +151,7 @@ function mapStateToProps(state, routerState) {
   return {
     challenges: state.challenges,
     currentChallenge: state.currentChallenge,
+    chat: state.currentChallenge.currentChallenge.chat,
     currentUser: state.session.currentUser,
     socket: state.session.socket,
     channel: state.currentChallenge.channel,

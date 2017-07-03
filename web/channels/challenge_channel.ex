@@ -1,7 +1,7 @@
 require IEx;
 defmodule PhoenixPair.ChallengeChannel do
   use PhoenixPair.Web, :channel
-  alias PhoenixPair.{Challenge, User}
+  alias PhoenixPair.{Challenge, User, Message, Chat}
   alias PhoenixPair.ChallengeChannel.Monitor
 
   def join("challenges:" <> challenge_id, _params, socket) do
@@ -44,6 +44,21 @@ defmodule PhoenixPair.ChallengeChannel do
     {:noreply, socket}
   end
 
+  def handle_in("chat:create_message", %{"message" => message}, socket) do
+    chat_id = current_challenge(socket).chat.id
+    user_id = current_user(socket).id
+    changeset = Message.changeset(%Message{}, %{user_id: user_id, chat_id: chat_id, content: message})
+
+    case Repo.insert changeset do 
+      {:ok, message} -> 
+        challenge = get_challenge(current_challenge(socket).id)
+        broadcast! socket, "chat:message_created", %{challenge: challenge}
+        {:noreply, socket}
+      {:error, message} ->
+        {:reply, {:error, %{error: "Error creating message for chat #{chat_id}"}}, socket}
+    end
+  end
+
   def terminate(_reason, socket) do
     %{participants: participant_ids} = Monitor.participant_left(current_challenge(socket).id, current_user(socket).id)
     users = collect_user_json(participant_ids)
@@ -67,7 +82,7 @@ defmodule PhoenixPair.ChallengeChannel do
 
   def get_challenge(id) do 
     Repo.get(Challenge, id)
-    |> Repo.preload(chat: :messages)
+    |> Repo.preload([{:chat, [{:messages, [:user]}]}])
   end
 
   def current_user(socket) do 

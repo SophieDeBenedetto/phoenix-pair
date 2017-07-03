@@ -1,3 +1,4 @@
+require IEx;
 defmodule PhoenixPair.ChallengesController do 
   use PhoenixPair.Web, :controller
 
@@ -6,7 +7,8 @@ defmodule PhoenixPair.ChallengesController do
   alias PhoenixPair.{Repo, User, Challenge}
 
   def index(conn, _params) do
-    challenges = Repo.all(Challenge)
+    IEx.pry
+    challenges = Repo.all(Challenge) |> Repo.preload([{:chat, [{:messages, [:user]}]}])
     render(conn, "index.json", challenges: challenges)
   end
 end

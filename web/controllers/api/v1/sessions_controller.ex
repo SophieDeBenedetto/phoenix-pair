@@ -1,3 +1,4 @@
+require IEx;
 defmodule PhoenixPair.SessionsController do 
   use PhoenixPair.Web, :controller
 

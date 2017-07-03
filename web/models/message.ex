@@ -1,6 +1,9 @@
 defmodule PhoenixPair.Message do
   use PhoenixPair.Web, :model
   alias PhoenixPair.{Chat, User}
+
+  @derive {Poison.Encoder, only: [:id, :chat_id, :user, :content]}
+
   schema "messages" do
     belongs_to :chat, Chat
     belongs_to :user, User
