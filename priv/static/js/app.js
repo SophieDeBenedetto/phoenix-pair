@@ -33500,7 +33500,6 @@ var ChallengeChat = function (_Component) {
   _createClass(ChallengeChat, [{
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
-      debugger;
       this.scrollToBottom();
     }
   }, {
@@ -33520,7 +33519,10 @@ var ChallengeChat = function (_Component) {
   }, {
     key: 'submitMessage',
     value: function submitMessage(e) {
-      if (e.key === 'Enter') this.props.submitMessage(e.target.value);
+      if (e.key === 'Enter') {
+        this.props.submitMessage(e.target.value);
+        this.refs.messageForm.value = '';
+      }
     }
   }, {
     key: 'renderMessages',
@@ -33603,7 +33605,7 @@ var ChallengeChat = function (_Component) {
           _react2.default.createElement('textArea', {
             className: 'form-control',
             style: { height: "78px" },
-            value: this.state.message,
+            ref: 'messageForm',
             onKeyPress: this.submitMessage.bind(this) })
         );
       } else {

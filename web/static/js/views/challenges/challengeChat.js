@@ -10,7 +10,6 @@ class ChallengeChat extends Component {
   }
 
   componentDidUpdate() {
-    debugger;
     this.scrollToBottom()
   }
 
@@ -27,9 +26,10 @@ class ChallengeChat extends Component {
   }
 
   submitMessage(e) {
-    if (e.key === 'Enter')
+    if (e.key === 'Enter') {
       this.props.submitMessage(e.target.value)
-
+      this.refs.messageForm.value = ''
+    }
   }
 
   renderMessages() {
@@ -72,7 +72,7 @@ class ChallengeChat extends Component {
           <textArea 
             className="form-control" 
             style={{height: "78px"}}
-            value={this.state.message}
+            ref="messageForm"
             onKeyPress={::this.submitMessage}/>
         </div>
       )
