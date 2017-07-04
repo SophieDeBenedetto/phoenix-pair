@@ -1,3 +1,4 @@
+require IEx;
 defmodule PhoenixPair.SessionsView do
   use PhoenixPair.Web, :view
 

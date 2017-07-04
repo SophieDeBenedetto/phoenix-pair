@@ -30,11 +30,10 @@ const Actions = {
       const data = {
         session: creds,
       };
-
       httpPost('/api/v1/sessions', data)
-      .then((data) => {
-        localStorage.setItem('phoenixAuthToken', data.jwt);
-        setCurrentUser(dispatch, data.user);
+      .then((response) => {
+        localStorage.setItem('phoenixAuthToken', response.jwt);
+        setCurrentUser(dispatch, response.user);
         dispatch(push('/challenges'));
       })
       .catch((error) => {

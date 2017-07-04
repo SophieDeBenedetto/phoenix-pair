@@ -33,7 +33,7 @@ class SessionsNew extends React.Component {
             <fieldset>
               <legend>Sign In</legend>
               <div className="form-group">
-                <label for="inputEmail" className="col-lg-2 control-label">email</label>
+                <label className="col-lg-2 control-label">email</label>
                 <div className="col-lg-10">
                   <input className="form-control" ref="email" id="user_email" type="text" placeholder="email" required={true} />
                   {renderErrorsFor(errors, 'email')}
@@ -41,7 +41,7 @@ class SessionsNew extends React.Component {
               </div>
 
               <div className="form-group">
-                <label for="inputPassword" className="col-lg-2 control-label">password</label>
+                <label className="col-lg-2 control-label">password</label>
                 <div className="col-lg-10">
                   <input className="form-control" ref="password" id="user_password" type="password" placeholder="password" required={true} />
                   {renderErrorsFor(errors, 'password')}
@@ -59,6 +59,7 @@ class SessionsNew extends React.Component {
 }
 
 function mapStateToProps(state) {
+  debugger;
   return {errors: state.session.error}
 }
 

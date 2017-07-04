@@ -44,9 +44,21 @@ class ChallengesIndex extends Component {
     }
   }
 
-  _addActive(e) {
+  addActive(e) {
     var currentChallengeId = e.target.parentElement.dataset.id;
     this.setState({currentChallengeId: currentChallengeId})
+  }
+
+  renderWelcome() {
+    if (!this.state.currentChallengeId) {
+      return (
+        <div className="col-lg-4 col-md-4 col-sm-4 welcome-msg">
+          <div className="alert alert-dismissible alert-success">
+            <strong>Welcome! </strong>Select a challenge to get started!
+          </div>
+        </div>
+      )
+    }
   }
   render() {
     const { challenges } = this.props
@@ -54,7 +66,7 @@ class ChallengesIndex extends Component {
     const list = challenges.map((challenge) => {
       return (
         <li 
-          onClick={::this._addActive} 
+          onClick={::this.addActive} 
           data-id={challenge.id} 
           key={challenge.id} 
           className={"list-group-item " + (this.state.currentChallengeId == challenge.id ? "active" : "")} >
@@ -72,6 +84,7 @@ class ChallengesIndex extends Component {
               {list}
             </ul>
           </div>
+          {this.renderWelcome()}
           <Route path="/challenges/:id" component={ChallengesShow}/>
         </div>
       </div>

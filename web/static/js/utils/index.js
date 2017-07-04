@@ -64,13 +64,21 @@ export function setDocumentTitle(title) {
 
 export function renderErrorsFor(errors, ref) {
   if (!errors) return false;
-  return errors.map((error, i) => {
-    if (error[ref]) {
-      return (
-        <div key={i} className="error">
-          {error[ref]}
-        </div>
-      );
-    }
-  });
+  if (typeof errors == "string") {
+    return (
+      <div className="error">
+        {errors}
+      </div>
+    );
+  } else {
+    return errors.map((error, i) => {
+      if (error[ref]) {
+        return (
+          <div key={i} className="error">
+            {error[ref]}
+          </div>
+        );
+      }
+    });
+  }
 }

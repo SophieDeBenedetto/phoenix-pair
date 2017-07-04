@@ -5,28 +5,29 @@ import { connect }            from 'react-redux';
 import Actions                from '../../actions/sessions'
 
 class Navigation extends Component {
-  _addActive(e) {
+  addActive(e) {
     var element = e.target.parentElement
     element.classList += "active"
   }
 
-  _logOut(e) {
+  logOut(e) {
     e.preventDefault()
     const {dispatch} = this.props;
     dispatch(Actions.signOut());
   }
-  _authLinks() {
-    if (localStorage.getItem('phoenixAuthToken')) {
+  authLinks() {
+    if (this.props.currentUser) {
       return (
         <ul className="nav navbar-nav navbar-right">
-          <li onClick={::this._logOut}><a>sign out</a></li>
+          <li><a>Hi, {this.props.currentUser.first_name}</a></li>
+          <li onClick={::this.logOut}><a>sign out</a></li>
         </ul>
       )
     } else {
       return (
         <ul className="nav navbar-nav navbar-right">
-          <li onClick={::this._addActive}><Link to="/sign_up"> sign up</Link></li>
-          <li onClick={::this._addActive}><Link to="/sign_in"> sign in</Link></li>
+          <li onClick={::this.addActive}><Link to="/sign_up"> sign up</Link></li>
+          <li onClick={::this.addActive}><Link to="/sign_in"> sign in</Link></li>
         </ul>
       )
     }
@@ -41,9 +42,9 @@ class Navigation extends Component {
           </div>
           <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul className="nav navbar-nav">
-              <li onClick={::this._addActive}><Link to="/challenges">challenges</Link></li>
+              <li onClick={::this.addActive}><Link to="/challenges">challenges</Link></li>
             </ul>
-              {::this._authLinks()}
+              {::this.authLinks()}
           </div>
         </div>
       </nav>
@@ -51,4 +52,8 @@ class Navigation extends Component {
   }
 }
 
-export default connect()(Navigation);
+function mapStateToProps(state) {
+  return {currentUser: state.session.currentUser}
+}
+
+export default connect(mapStateToProps)(Navigation);

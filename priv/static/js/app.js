@@ -1908,15 +1908,23 @@ function setDocumentTitle(title) {
 
 function renderErrorsFor(errors, ref) {
   if (!errors) return false;
-  return errors.map(function (error, i) {
-    if (error[ref]) {
-      return _react2.default.createElement(
-        'div',
-        { key: i, className: 'error' },
-        error[ref]
-      );
-    }
-  });
+  if (typeof errors == "string") {
+    return _react2.default.createElement(
+      'div',
+      { className: 'error' },
+      errors
+    );
+  } else {
+    return errors.map(function (error, i) {
+      if (error[ref]) {
+        return _react2.default.createElement(
+          'div',
+          { key: i, className: 'error' },
+          error[ref]
+        );
+      }
+    });
+  }
 }
 
 /***/ }),
@@ -14358,10 +14366,9 @@ var Actions = {
       var data = {
         session: creds
       };
-
-      (0, _utils.httpPost)('/api/v1/sessions', data).then(function (data) {
-        localStorage.setItem('phoenixAuthToken', data.jwt);
-        setCurrentUser(dispatch, data.user);
+      (0, _utils.httpPost)('/api/v1/sessions', data).then(function (response) {
+        localStorage.setItem('phoenixAuthToken', response.jwt);
+        setCurrentUser(dispatch, response.user);
         dispatch((0, _reactRouterRedux.push)('/challenges'));
       }).catch(function (error) {
         error.response.json().then(function (errorJSON) {
@@ -21528,7 +21535,7 @@ var SessionsNew = function (_React$Component) {
                 { className: 'form-group' },
                 _react2.default.createElement(
                   'label',
-                  { 'for': 'inputEmail', className: 'col-lg-2 control-label' },
+                  { className: 'col-lg-2 control-label' },
                   'email'
                 ),
                 _react2.default.createElement(
@@ -21543,7 +21550,7 @@ var SessionsNew = function (_React$Component) {
                 { className: 'form-group' },
                 _react2.default.createElement(
                   'label',
-                  { 'for': 'inputPassword', className: 'col-lg-2 control-label' },
+                  { className: 'col-lg-2 control-label' },
                   'password'
                 ),
                 _react2.default.createElement(
@@ -21575,6 +21582,7 @@ var SessionsNew = function (_React$Component) {
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
+  debugger;
   return { errors: state.session.error };
 }
 
@@ -33451,7 +33459,7 @@ function reducer() {
       return initialState;
     case _constants2.default.SOCKET_CONNECTED:
       return _extends({}, state, { socket: action.socket, channel: action.channel, currentUser: action.currentUser });
-    case _constants2.default.SESSION_ERROR:
+    case _constants2.default.SESSIONS_ERROR:
       return _extends({}, state, { error: action.error });
     default:
       return state;
@@ -34001,10 +34009,30 @@ var ChallengesIndex = function (_Component) {
       }
     }
   }, {
-    key: '_addActive',
-    value: function _addActive(e) {
+    key: 'addActive',
+    value: function addActive(e) {
       var currentChallengeId = e.target.parentElement.dataset.id;
       this.setState({ currentChallengeId: currentChallengeId });
+    }
+  }, {
+    key: 'renderWelcome',
+    value: function renderWelcome() {
+      if (!this.state.currentChallengeId) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'col-lg-4 col-md-4 col-sm-4 welcome-msg' },
+          _react2.default.createElement(
+            'div',
+            { className: 'alert alert-dismissible alert-success' },
+            _react2.default.createElement(
+              'strong',
+              null,
+              'Welcome! '
+            ),
+            'Select a challenge to get started!'
+          )
+        );
+      }
     }
   }, {
     key: 'render',
@@ -34018,7 +34046,7 @@ var ChallengesIndex = function (_Component) {
         return _react2.default.createElement(
           'li',
           {
-            onClick: _this2._addActive.bind(_this2),
+            onClick: _this2.addActive.bind(_this2),
             'data-id': challenge.id,
             key: challenge.id,
             className: "list-group-item " + (_this2.state.currentChallengeId == challenge.id ? "active" : "") },
@@ -34044,6 +34072,7 @@ var ChallengesIndex = function (_Component) {
               list
             )
           ),
+          this.renderWelcome(),
           _react2.default.createElement(_reactRouterDom.Route, { path: '/challenges/:id', component: _show2.default })
         )
       );
@@ -34548,29 +34577,39 @@ var Navigation = function (_Component) {
   }
 
   _createClass(Navigation, [{
-    key: '_addActive',
-    value: function _addActive(e) {
+    key: 'addActive',
+    value: function addActive(e) {
       var element = e.target.parentElement;
       element.classList += "active";
     }
   }, {
-    key: '_logOut',
-    value: function _logOut(e) {
+    key: 'logOut',
+    value: function logOut(e) {
       e.preventDefault();
       var dispatch = this.props.dispatch;
 
       dispatch(_sessions2.default.signOut());
     }
   }, {
-    key: '_authLinks',
-    value: function _authLinks() {
-      if (localStorage.getItem('phoenixAuthToken')) {
+    key: 'authLinks',
+    value: function authLinks() {
+      if (this.props.currentUser) {
         return _react2.default.createElement(
           'ul',
           { className: 'nav navbar-nav navbar-right' },
           _react2.default.createElement(
             'li',
-            { onClick: this._logOut.bind(this) },
+            null,
+            _react2.default.createElement(
+              'a',
+              null,
+              'Hi, ',
+              this.props.currentUser.first_name
+            )
+          ),
+          _react2.default.createElement(
+            'li',
+            { onClick: this.logOut.bind(this) },
             _react2.default.createElement(
               'a',
               null,
@@ -34584,7 +34623,7 @@ var Navigation = function (_Component) {
           { className: 'nav navbar-nav navbar-right' },
           _react2.default.createElement(
             'li',
-            { onClick: this._addActive.bind(this) },
+            { onClick: this.addActive.bind(this) },
             _react2.default.createElement(
               _reactRouterDom.Link,
               { to: '/sign_up' },
@@ -34593,7 +34632,7 @@ var Navigation = function (_Component) {
           ),
           _react2.default.createElement(
             'li',
-            { onClick: this._addActive.bind(this) },
+            { onClick: this.addActive.bind(this) },
             _react2.default.createElement(
               _reactRouterDom.Link,
               { to: '/sign_in' },
@@ -34629,7 +34668,7 @@ var Navigation = function (_Component) {
               { className: 'nav navbar-nav' },
               _react2.default.createElement(
                 'li',
-                { onClick: this._addActive.bind(this) },
+                { onClick: this.addActive.bind(this) },
                 _react2.default.createElement(
                   _reactRouterDom.Link,
                   { to: '/challenges' },
@@ -34637,7 +34676,7 @@ var Navigation = function (_Component) {
                 )
               )
             ),
-            this._authLinks.call(this)
+            this.authLinks.call(this)
           )
         )
       );
@@ -34647,7 +34686,11 @@ var Navigation = function (_Component) {
   return Navigation;
 }(_react.Component);
 
-exports.default = (0, _reactRedux.connect)()(Navigation);
+function mapStateToProps(state) {
+  return { currentUser: state.session.currentUser };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(Navigation);
 
 /***/ }),
 /* 267 */
