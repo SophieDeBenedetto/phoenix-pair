@@ -32985,7 +32985,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-function configRoutes(store) {
+function configRoutes() {
   return _react2.default.createElement(
     'div',
     null,
@@ -33220,7 +33220,7 @@ _reactDom2.default.render(_react2.default.createElement(
     _react2.default.createElement(
       'div',
       null,
-      (0, _routes2.default)(store)
+      (0, _routes2.default)()
     )
   )
 ), document.getElementById('main_container'));

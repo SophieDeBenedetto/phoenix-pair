@@ -34,7 +34,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <div>
-        {configRoutes(store)}
+        {configRoutes()}
       </div>
     </Router>
   </Provider>,

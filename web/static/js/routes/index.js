@@ -7,7 +7,7 @@ import SessionsNew                  from '../views/sessions/new';
 import ChallengesIndex              from '../views/challenges/index';
 import Actions                      from '../actions/sessions';
 
-export default function configRoutes(store) {
+export default function configRoutes() {
   return (
     <div>
       <Navigation />
