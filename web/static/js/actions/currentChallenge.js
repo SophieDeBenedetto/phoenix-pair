@@ -1,7 +1,9 @@
 import Constants              from '../constants';
 import { push }               from 'react-router-redux';
-import { Socket }             from 'phoenix';
+import { Socket, Presence }   from 'phoenix';
 import { httpGet, httpPost }  from '../utils';
+
+window.Presence = Presence
 
 const Actions = {
   connectToChannel: (socket, challengeId) => {
@@ -16,25 +18,20 @@ const Actions = {
         })
       });
 
-      channel.on('user:joined', (response) => {
-        var users    = response.users.map((user) => JSON.parse(user));
-        var language = response.language;
-        var user     = response.user;
+      channel.on("presence_diff", (response) => {
         dispatch({
-          type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: users,
-          language: language,
-          user: user
+          type: Constants.PARTICIPANTS_UPDATE,
+          presences: response
         });
-      });
+      })
 
-      channel.on('user:left', (response) => {
-        var users = response.users.map((user) => JSON.parse(user))
+      channel.on("presence_state", (response) => {
+        var participants = Object.values(response).map(o => {return o.metas[0]})
         dispatch({
           type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: users
+          users: participants
         });
-      });
+      })
 
       channel.on("response:updated", (response) => {
         dispatch({
@@ -84,11 +81,6 @@ const Actions = {
     }
   },
 
-  updateCurrentParticipant: (channel) => {
-    return dispatch => {
-      channel.push("current_participant:remove", {test: "hi"})
-    }
-  },
 
   submitChatMessage: (channel, message) => {
     return dispatch => {

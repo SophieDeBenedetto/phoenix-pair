@@ -62,8 +62,10 @@ class ChallengesShow extends React.Component {
   componentWillReceiveProps(nextProps, nextParams) {
     var paramId            = parseInt(nextProps.match.params.id)
     const {challenges}     = this.props;
-    var currentChallengeId = nextProps.currentChallenge.currentChallenge.id
-    
+    var currentChallengeId;
+    if (nextProps.currentChallenge.currentChallenge) {
+      currentChallengeId = nextProps.currentChallenge.currentChallenge.id
+    }
     if (this.pageRefresh(currentChallengeId, challenges)) {
       this.subscribeAndSetState(nextProps, paramId, challenges, this)
     }
@@ -86,7 +88,6 @@ class ChallengesShow extends React.Component {
   setTheme(theme) {
     this.setState({theme: theme})
   }
-
 
   setLanguage(e) {
     const {dispatch, channel} = this.props;

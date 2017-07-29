@@ -2,27 +2,26 @@ require IEx;
 defmodule PhoenixPair.ChallengeChannel do
   use PhoenixPair.Web, :channel
   alias PhoenixPair.{Challenge, User, Message, Chat}
-  alias PhoenixPair.ChallengeChannel.Monitor
+  alias PhoenixPair.ChallengePresence
+
 
   def join("challenges:" <> challenge_id, _params, socket) do
-    challenge       = get_challenge(challenge_id)
-    challenge_state = Monitor.participant_joined(challenge_id, current_user(socket).id)
-    send(self, {:after_join, challenge_state})
-
+    challenge = get_challenge(challenge_id)
+    send(self, :after_join)
+    
     {:ok, %{challenge: challenge}, assign(socket, :challenge, challenge)}
   end
 
-  def handle_info({:after_join, challenge_state}, socket) do
-    users = collect_user_json(challenge_state[:participants])
-    broadcast! socket, "user:joined", %{users: users, language: challenge_state[:language], user: challenge_state[:user]}
+  def handle_info(:after_join, socket) do
+    {:ok, _ } = ChallengePresence.track(socket, current_user(socket).id, %{
+      typing: false, 
+      first_name: current_user(socket).first_name, 
+      user_id: current_user(socket).id
+    })
+    push socket, "presence_state", ChallengePresence.list(socket)
     {:noreply, socket}
   end
 
-  def handle_in("current_participant:remove", _params, socket) do
-    challenge_state = Monitor.current_participant_typing(current_challenge(socket).id, nil)
-    broadcast! socket, "current_participant:removed", %{}
-    {:noreply, socket}
-  end
 
   def handle_in("response:update", %{"response" => response, "user" => user}, socket) do
     challenge = current_challenge(socket)
@@ -39,9 +38,9 @@ defmodule PhoenixPair.ChallengeChannel do
   end
 
   def handle_in("language:update", %{"response" => response}, socket) do 
-    %{language: language} = Monitor.language_update(current_challenge(socket).id, response)
-    broadcast! socket, "language:updated", %{language: language}
-    {:noreply, socket}
+    # %{language: language} = Monitor.language_update(current_challenge(socket).id, response)
+    # broadcast! socket, "language:updated", %{language: language}
+    # {:noreply, socket}
   end
 
   def handle_in("chat:create_message", %{"message" => message}, socket) do
@@ -59,26 +58,14 @@ defmodule PhoenixPair.ChallengeChannel do
     end
   end
 
-  def terminate(_reason, socket) do
-    %{participants: participant_ids} = Monitor.participant_left(current_challenge(socket).id, current_user(socket).id)
-    users = collect_user_json(participant_ids)
-    broadcast! socket, "user:left", %{users: users}
-    :ok
-  end
+  # def terminate(_reason, socket) do
+  #   # %{participants: participant_ids} = Monitor.participant_left(current_challenge(socket).id, current_user(socket).id)
+  #   # users = collect_user_json(participant_ids)
+  #   # broadcast! socket, "user:left", %{users: users}
+  #   # :ok
+  # end
 
-  defp collect_user_json(user_ids) do
-    Enum.map(user_ids, &encode_user(&1))
-  end
 
-  defp encode_user(user_id) do
-    user = Repo.get(User, user_id)
-    case Poison.encode(user) do
-      {:ok, user} ->
-        user
-      _ ->
-        :error
-    end
-  end
 
   def get_challenge(id) do 
     Repo.get(Challenge, id)

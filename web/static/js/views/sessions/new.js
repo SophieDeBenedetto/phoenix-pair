@@ -59,7 +59,6 @@ class SessionsNew extends React.Component {
 }
 
 function mapStateToProps(state) {
-  debugger;
   return {errors: state.session.error}
 }
 
