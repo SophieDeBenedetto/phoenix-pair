@@ -5,11 +5,21 @@ import { httpGet, httpPost }  from '../utils';
 
 window.Presence = Presence
 
+const syncPresentUsers = (dispatch, presences) => {
+  const participants = [];
+  Presence.list(presences).map(p => {participants.push(p.metas[0])})
+  dispatch({ 
+    type: Constants.CURRENT_CHALLENGE_PARTICIPANTS, 
+    participants 
+  });
+};
+
+
 const Actions = {
   connectToChannel: (socket, challengeId) => {
     return dispatch => {
       const channel = socket.channel(`challenges:${challengeId}`);
-
+      let presences = {};
       channel.join().receive('ok', (response) => {
         dispatch({
           type: Constants.SET_CURRENT_CHALLENGE,
@@ -19,18 +29,13 @@ const Actions = {
       });
 
       channel.on("presence_diff", (response) => {
-        dispatch({
-          type: Constants.PARTICIPANTS_UPDATE,
-          presences: response
-        });
+        presences = Presence.syncDiff(presences, response);
+        syncPresentUsers(dispatch, presences);
       })
 
       channel.on("presence_state", (response) => {
-        var participants = Object.values(response).map(o => {return o.metas[0]})
-        dispatch({
-          type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: participants
-        });
+        presences = Presence.syncState(presences, response);
+        syncPresentUsers(dispatch, presences);
       })
 
       channel.on("response:updated", (response) => {

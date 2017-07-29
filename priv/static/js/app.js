@@ -17233,11 +17233,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 window.Presence = _phoenix.Presence;
 
+var syncPresentUsers = function syncPresentUsers(dispatch, presences) {
+  var participants = [];
+  _phoenix.Presence.list(presences).map(function (p) {
+    participants.push(p.metas[0]);
+  });
+  dispatch({
+    type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
+    participants: participants
+  });
+};
+
 var Actions = {
   connectToChannel: function connectToChannel(socket, challengeId) {
     return function (dispatch) {
       var channel = socket.channel('challenges:' + challengeId);
-
+      var presences = {};
       channel.join().receive('ok', function (response) {
         dispatch({
           type: _constants2.default.SET_CURRENT_CHALLENGE,
@@ -17247,44 +17258,13 @@ var Actions = {
       });
 
       channel.on("presence_diff", function (response) {
-        dispatch({
-          type: _constants2.default.PARTICIPANTS_UPDATE,
-          presences: response
-        });
+        presences = _phoenix.Presence.syncDiff(presences, response);
+        syncPresentUsers(dispatch, presences);
       });
 
       channel.on("presence_state", function (response) {
-        var participants = Object.values(response).map(function (o) {
-          return o.metas[0];
-        });
-        dispatch({
-          type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: participants
-        });
-      });
-
-      channel.on('user:joined', function (response) {
-        var users = response.users.map(function (user) {
-          return JSON.parse(user);
-        });
-        var language = response.language;
-        var user = response.user;
-        dispatch({
-          type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: users,
-          language: language,
-          user: user
-        });
-      });
-
-      channel.on('user:left', function (response) {
-        var users = response.users.map(function (user) {
-          return JSON.parse(user);
-        });
-        dispatch({
-          type: _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS,
-          users: users
-        });
+        presences = _phoenix.Presence.syncState(presences, response);
+        syncPresentUsers(dispatch, presences);
       });
 
       channel.on("response:updated", function (response) {
@@ -17328,12 +17308,6 @@ var Actions = {
   updateLanguage: function updateLanguage(channel, language) {
     return function (dispatch) {
       channel.push("language:update", { response: language });
-    };
-  },
-
-  updateCurrentParticipant: function updateCurrentParticipant(channel) {
-    return function (dispatch) {
-      channel.push("current_participant:remove", { test: "hi" });
     };
   },
 
@@ -22879,7 +22853,6 @@ var SessionsNew = function (_React$Component) {
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-  debugger;
   return { errors: state.session.error };
 }
 
@@ -33377,8 +33350,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var initialState = {
   currentChallenge: {},
   participants: [],
-  presences: {},
-  currentParticipant: null,
   channel: null,
   language: 'ruby'
 };
@@ -33388,22 +33359,14 @@ function reducer() {
   var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   switch (action.type) {
-    case _constants2.default.PARTICIPANTS_UPDATE:
-      var presences = _phoenix.Presence.syncDiff(state.presences, action.presences);
-      var participants = Object.values(presences).map(function (u) {
-        return u.metas[0];
-      });
-      return _extends({}, state, { presences: presences, participants: participants });
+    case _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS:
+      return _extends({}, state, { participants: action.participants });
     case _constants2.default.SET_CURRENT_CHALLENGE:
       return _extends({}, state, { currentChallenge: action.challenge, channel: action.channel });
-    case _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS:
-      return _extends({}, state, { participants: action.users });
     case _constants2.default.CURRENT_CHALLENGE_RESPONSE:
       return _extends({}, state, { currentChallenge: action.challenge, currentParticipant: action.user });
     case _constants2.default.CURRENT_CHALLENGE_LANGUAGE:
       return _extends({}, state, { language: action.language });
-    case _constants2.default.CURRENT_PARTICIPANT_REMOVED:
-      return _extends({}, state, { currentParticipant: null });
     case _constants2.default.CURRENT_CHALLENGE_CHAT_MESSAGES:
       return _extends({}, state, { currentChallenge: action.challenge });
     default:
@@ -33768,16 +33731,16 @@ var ChallengeParticipants = function (_Component) {
       return this.props.participants.map(function (user) {
         var currentParticipant = _this2.props.currentParticipant;
 
-        if (currentParticipant && user.id == currentParticipant.id) {
+        if (currentParticipant && user.user_id == currentParticipant.id) {
           return _react2.default.createElement(
             'li',
-            { key: user.id, style: glow, className: 'loading' },
+            { key: user.user_id, style: glow, className: 'loading' },
             user.first_name
           );
         } else {
           return _react2.default.createElement(
             'li',
-            { key: user.id, style: { listStyle: 'none' } },
+            { key: user.user_id, style: { listStyle: 'none' } },
             user.first_name
           );
         }

@@ -12,15 +12,15 @@ class ChallengeParticipants extends Component {
   renderParticipants() {
     return this.props.participants.map((user) => {
         const {currentParticipant} = this.props
-        if (currentParticipant && user.id == currentParticipant.id) {
+        if (currentParticipant && user.user_id == currentParticipant.id) {
           return (
-            <li key={user.id} style={glow} className="loading">
+            <li key={user.user_id} style={glow} className="loading">
             {user.first_name}
             </li>
           )
         }else {
           return (
-          <li key={user.id} style={{listStyle: 'none'}}>
+          <li key={user.user_id} style={{listStyle: 'none'}}>
             {user.first_name}
           </li>   
           )
