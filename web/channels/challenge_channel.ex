@@ -33,8 +33,8 @@ defmodule PhoenixPair.ChallengeChannel do
     case Repo.update challenge do
       {:ok, struct}    
          ->
-        challenge_state = Monitor.current_participant_typing(struct.id, user_id)
-        broadcast! socket, "response:updated", %{challenge: struct, challenge_state: challenge_state}
+        Monitor.current_participant_typing(struct.id, user_id)
+        broadcast! socket, "response:updated", %{challenge: struct, challenge_state: Monitor.get_challenge_state(current_challenge(socket).id)}
         {:noreply, socket}
       {:error, changeset} ->
         {:reply, {:error, %{error: "Error updating challenge"}}, socket}
@@ -42,8 +42,8 @@ defmodule PhoenixPair.ChallengeChannel do
   end
 
   def handle_in("language:update", %{"response" => response}, socket) do 
-    %{language: language} = Monitor.language_update(current_challenge(socket).id, response)
-    broadcast! socket, "language:updated", %{language: language}
+    Monitor.language_update(current_challenge(socket).id, response)
+    broadcast! socket, "language:updated", Monitor.get_challenge_state(current_challenge(socket).id)
     {:noreply, socket}
   end
 
@@ -63,8 +63,8 @@ defmodule PhoenixPair.ChallengeChannel do
   end
 
   def handle_in("current_participant_typing:remove", _, socket) do 
-    challenge_state = Monitor.current_participant_typing(current_challenge(socket).id, nil)
-    broadcast! socket, "current_participant_typing:removed", %{challenge_state: challenge_state}
+    Monitor.current_participant_typing(current_challenge(socket).id, nil)
+    broadcast! socket, "current_participant_typing:removed", Monitor.get_challenge_state(current_challenge(socket).id)
     {:noreply, socket}
   end
 

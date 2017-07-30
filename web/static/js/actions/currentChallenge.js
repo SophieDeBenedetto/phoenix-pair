@@ -70,7 +70,7 @@ const Actions = {
       channel.on('current_participant_typing:removed', (response) => {
         dispatch({
           type: Constants.CURRENT_CHALLENGE_STATE,
-          challenge_state: response.challenge_state
+          challenge_state: response
         })
       })
     }

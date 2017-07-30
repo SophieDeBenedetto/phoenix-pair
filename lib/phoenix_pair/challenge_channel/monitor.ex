@@ -7,7 +7,6 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
 
   def participant_joined(challenge) do
     Agent.update(__MODULE__, fn state -> do_participant_joined(state, challenge) end)
-    get_challenge_state(challenge)
   end
 
   def get_challenge_state(challenge) do 
@@ -16,12 +15,10 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
 
   def language_update(challenge, language) do
     Agent.update(__MODULE__, fn state -> do_language_update(state, challenge, language) end)
-    get_challenge_state(challenge)
   end
 
   def current_participant_typing(challenge, user_id) do
     Agent.update(__MODULE__, fn state -> do_current_participant_typing(state, challenge, user_id) end)
-    get_challenge_state(challenge) 
   end
 
   ### Private helper functions

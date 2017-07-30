@@ -17300,7 +17300,7 @@ var Actions = {
       channel.on('current_participant_typing:removed', function (response) {
         dispatch({
           type: _constants2.default.CURRENT_CHALLENGE_STATE,
-          challenge_state: response.challenge_state
+          challenge_state: response
         });
       });
     };
