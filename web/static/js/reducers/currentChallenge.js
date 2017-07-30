@@ -15,12 +15,19 @@ export default function reducer(state = initialState, action = {}) {
       var indexOfTyping = state.participants.findIndex(p => {
         return p.user_id == action.challenge_state.typing_user_id
       })
+      var newState = Object.assign([], state.participants);
       if (indexOfTyping >= 0) {   
         var currentlyTyping = state.participants[indexOfTyping]
         currentlyTyping.typing = true;
-        var newState = Object.assign([], state.participants);
         newState.splice(indexOfTyping, 1)
         return {...state, language: language, participants: [...newState, currentlyTyping]}
+      } else if (!action.challenge_state.typing_user_id) {
+        var indexOfWasTyping = state.participants.findIndex(p => {
+          return p.typing
+        })
+        var wasTyping = newState.splice(indexOfWasTyping, 1)[0];
+        wasTyping.typing = false;
+        return {...state, language: language, participants: [...newState, wasTyping]}
       } else {
         return {...state, language: language}
       }
@@ -32,7 +39,7 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.CURRENT_CHALLENGE_RESPONSE:
       var newState = Object.assign([], state.participants);
       
-      const indexOfWasTyping = state.participants.findIndex(p => {
+      var indexOfWasTyping = state.participants.findIndex(p => {
         return p.typing
       })
 

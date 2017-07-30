@@ -66,6 +66,13 @@ const Actions = {
           challenge: response.challenge
         })
       })
+
+      channel.on('current_participant_typing:removed', (response) => {
+        dispatch({
+          type: Constants.CURRENT_CHALLENGE_STATE,
+          challenge_state: response.challenge_state
+        })
+      })
     }
   },
 
@@ -91,6 +98,12 @@ const Actions = {
   submitChatMessage: (channel, message) => {
     return dispatch => {
       channel.push("chat:create_message", {message: message})
+    }
+  },
+
+  removeCurrentParticipantTyping: (channel) => {
+    return dispatch => {
+      channel.push("current_participant_typing:remove", {})
     }
   }
 

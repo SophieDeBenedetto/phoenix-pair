@@ -62,6 +62,12 @@ defmodule PhoenixPair.ChallengeChannel do
     end
   end
 
+  def handle_in("current_participant_typing:remove", _, socket) do 
+    challenge_state = Monitor.current_participant_typing(current_challenge(socket).id, nil)
+    broadcast! socket, "current_participant_typing:removed", %{challenge_state: challenge_state}
+    {:noreply, socket}
+  end
+
   def get_challenge(id) do 
     Repo.get(Challenge, id)
     |> Repo.preload([{:chat, [{:messages, [:user]}]}])

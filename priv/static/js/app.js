@@ -17296,6 +17296,13 @@ var Actions = {
           challenge: response.challenge
         });
       });
+
+      channel.on('current_participant_typing:removed', function (response) {
+        dispatch({
+          type: _constants2.default.CURRENT_CHALLENGE_STATE,
+          challenge_state: response.challenge_state
+        });
+      });
     };
   },
 
@@ -17320,6 +17327,12 @@ var Actions = {
   submitChatMessage: function submitChatMessage(channel, message) {
     return function (dispatch) {
       channel.push("chat:create_message", { message: message });
+    };
+  },
+
+  removeCurrentParticipantTyping: function removeCurrentParticipantTyping(channel) {
+    return function (dispatch) {
+      channel.push("current_participant_typing:remove", {});
     };
   }
 
@@ -33372,12 +33385,19 @@ function reducer() {
       var indexOfTyping = state.participants.findIndex(function (p) {
         return p.user_id == action.challenge_state.typing_user_id;
       });
+      var newState = Object.assign([], state.participants);
       if (indexOfTyping >= 0) {
         var currentlyTyping = state.participants[indexOfTyping];
         currentlyTyping.typing = true;
-        var newState = Object.assign([], state.participants);
         newState.splice(indexOfTyping, 1);
         return _extends({}, state, { language: language, participants: [].concat(_toConsumableArray(newState), [currentlyTyping]) });
+      } else if (!action.challenge_state.typing_user_id) {
+        var indexOfWasTyping = state.participants.findIndex(function (p) {
+          return p.typing;
+        });
+        var wasTyping = newState.splice(indexOfWasTyping, 1)[0];
+        wasTyping.typing = false;
+        return _extends({}, state, { language: language, participants: [].concat(_toConsumableArray(newState), [wasTyping]) });
       } else {
         return _extends({}, state, { language: language });
       }
@@ -34400,24 +34420,27 @@ var ChallengesShow = function (_React$Component) {
   }, {
     key: 'removeCurrentParticipantTyping',
     value: function removeCurrentParticipantTyping(text) {
-      // const {channel, dispatch} = this.props;
-      // dispatch(Actions.removeCurrentParticipantTyping(channel))
+      var _props5 = this.props,
+          channel = _props5.channel,
+          dispatch = _props5.dispatch;
+
+      dispatch(_currentChallenge2.default.removeCurrentParticipantTyping(channel));
     }
   }, {
     key: 'submitMessage',
     value: function submitMessage(message) {
-      var _props5 = this.props,
-          channel = _props5.channel,
-          dispatch = _props5.dispatch;
+      var _props6 = this.props,
+          channel = _props6.channel,
+          dispatch = _props6.dispatch;
 
       dispatch(_currentChallenge2.default.submitChatMessage(channel, message));
     }
   }, {
     key: 'render',
     value: function render() {
-      var _props6 = this.props,
-          channel = _props6.channel,
-          dispatch = _props6.dispatch;
+      var _props7 = this.props,
+          channel = _props7.channel,
+          dispatch = _props7.dispatch;
 
       return _react2.default.createElement(
         'div',

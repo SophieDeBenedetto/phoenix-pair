@@ -95,8 +95,8 @@ class ChallengesShow extends React.Component {
   }
 
   removeCurrentParticipantTyping(text) {
-    // const {channel, dispatch} = this.props;
-    // dispatch(Actions.removeCurrentParticipantTyping(channel))
+    const {channel, dispatch} = this.props;
+    dispatch(Actions.removeCurrentParticipantTyping(channel))
   }
 
   submitMessage(message) {
