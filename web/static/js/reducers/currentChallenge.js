@@ -1,5 +1,6 @@
 import Constants from '../constants';
-import {Presence} from 'phoenix'
+import {Presence} from 'phoenix';
+import ChallengeState from './services/challengeState';
 
 const initialState = {
   currentChallenge: {},
@@ -37,37 +38,11 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.SET_CURRENT_CHALLENGE:
       return {...state, currentChallenge: action.challenge, channel: action.channel}
     case Constants.CURRENT_CHALLENGE_RESPONSE:
-      var newState = Object.assign([], state.participants);
-      
-      var indexOfWasTyping = state.participants.findIndex(p => {
-        return p.typing
-      })
-
-      const indexOfCurrentlyTyping = state.participants.findIndex(p => {
-        return p.user_id == action.challenge_state.typing_user_id
-      })
-      // if was typing exist and is NOT the same as currently
-      if (indexOfWasTyping >= 0 && indexOfWasTyping != indexOfCurrentlyTyping) {
-        var wasTyping = newState.splice(indexOfWasTyping, 1)[0];
-        var currentlyTyping = newState.splice(indexOfCurrentlyTyping, 1)[0]
-        wasTyping.typing = false;
-        currentlyTyping.typing = true;
-        return {...state, currentChallenge: action.challenge, participants: [...newState, wasTyping, currentlyTyping]}
-      }
-
-      // if was typing is the same as currently typing 
-      if (indexOfWasTyping >=0 && indexOfWasTyping == indexOfCurrentlyTyping) {
-        debugger;
-        return {...state, currentChallenge: action.challenge}
-      }
-
-      // if was typing does not exist
-      if (indexOfWasTyping == -1) {
-        debugger;
-        var currentlyTyping = newState.splice(indexOfCurrentlyTyping, 1)[0]
-        currentlyTyping.typing = true;
-        return {...state, currentChallenge: action.challenge, participants: [...newState, currentlyTyping]}
-      }
+    debugger;
+      var challengeStateUpdater = new ChallengeState(state.participants, action)
+      var participants = challengeStateUpdater.updateParticipants() || state.participants
+      debugger;
+      return {...state, currentChallenge: action.challenge, participants: participants}
     case Constants.CURRENT_CHALLENGE_LANGUAGE:
       return {...state, language: action.language}
     case Constants.CURRENT_CHALLENGE_CHAT_MESSAGES:
