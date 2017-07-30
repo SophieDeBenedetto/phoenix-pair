@@ -27,8 +27,6 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
   ### Private helper functions
 
   defp do_participant_joined(state, challenge) do 
-    IO.puts "STATE:"
-    IO.inspect state
     case state[challenge] do
       nil ->   
         state
@@ -36,12 +34,6 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
       data ->
         state
     end
-  end
-
-
-  defp do_language_update(state, challenge, language) when is_integer(challenge) do 
-    challenge_id = Integer.to_string(challenge)
-    do_language_update(state, challenge_id, language)
   end
 
   defp do_language_update(state, challenge, language) do 

@@ -42,9 +42,9 @@ defmodule PhoenixPair.ChallengeChannel do
   end
 
   def handle_in("language:update", %{"response" => response}, socket) do 
-    # %{language: language} = Monitor.language_update(current_challenge(socket).id, response)
-    # broadcast! socket, "language:updated", %{language: language}
-    # {:noreply, socket}
+    %{language: language} = Monitor.language_update(current_challenge(socket).id, response)
+    broadcast! socket, "language:updated", %{language: language}
+    {:noreply, socket}
   end
 
   def handle_in("chat:create_message", %{"message" => message}, socket) do
