@@ -12465,7 +12465,8 @@ var Constants = {
   CURRENT_CHALLENGE_LANGUAGE: 'CURRENT_CHALLENGE_LANGUAGE',
   CURRENT_PARTICIPANT_REMOVED: 'CURRENT_PARTICIPANT_REMOVED',
   CURRENT_CHALLENGE_CHAT_MESSAGES: 'CURRENT_CHALLENGE_CHAT_MESSAGES',
-  PARTICIPANTS_UPDATE: 'PARTICIPANTS_UPDATE'
+  PARTICIPANTS_UPDATE: 'PARTICIPANTS_UPDATE',
+  CURRENT_CHALLENGE_STATE: 'CURRENT_CHALLENGE_STATE'
 
 };
 
@@ -17267,11 +17268,18 @@ var Actions = {
         syncPresentUsers(dispatch, presences);
       });
 
+      channel.on("user:joined", function (response) {
+        dispatch({
+          type: _constants2.default.CURRENT_CHALLENGE_STATE,
+          challenge_state: response.challenge_state
+        });
+      });
+
       channel.on("response:updated", function (response) {
         dispatch({
           type: _constants2.default.CURRENT_CHALLENGE_RESPONSE,
           challenge: response.challenge,
-          user: response.user
+          challenge_state: response.challenge_state
         });
       });
 
@@ -17280,11 +17288,9 @@ var Actions = {
           type: _constants2.default.CURRENT_CHALLENGE_LANGUAGE,
           language: response.language
         });
-      }), channel.on('current_participant:removed', function (response) {
-        dispatch({
-          type: _constants2.default.CURRENT_PARTICIPANT_REMOVED
-        });
-      }), channel.on('chat:message_created', function (response) {
+      });
+
+      channel.on('chat:message_created', function (response) {
         dispatch({
           type: _constants2.default.CURRENT_CHALLENGE_CHAT_MESSAGES,
           challenge: response.challenge
@@ -17301,7 +17307,7 @@ var Actions = {
 
   updateResponse: function updateResponse(channel, codeResponse, currentUser) {
     return function (dispatch) {
-      channel.push("response:update", { response: codeResponse, user: currentUser });
+      channel.push("response:update", { response: codeResponse, user_id: currentUser.id });
     };
   },
 
@@ -33347,11 +33353,13 @@ var _phoenix = __webpack_require__(118);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var initialState = {
   currentChallenge: {},
+  language: "javascript",
   participants: [],
-  channel: null,
-  language: 'ruby'
+  channel: null
 };
 
 function reducer() {
@@ -33359,12 +33367,57 @@ function reducer() {
   var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   switch (action.type) {
+    case _constants2.default.CURRENT_CHALLENGE_STATE:
+      var language = action.challenge_state.language || state.language;
+      var indexOfTyping = state.participants.findIndex(function (p) {
+        return p.user_id == action.challenge_state.typing_user_id;
+      });
+      if (indexOfTyping >= 0) {
+        var currentlyTyping = state.participants[indexOfTyping];
+        currentlyTyping.typing = true;
+        var newState = Object.assign([], state.participants);
+        newState.splice(indexOfTyping, 1);
+        return _extends({}, state, { language: language, participants: [].concat(_toConsumableArray(newState), [currentlyTyping]) });
+      } else {
+        return _extends({}, state, { language: language });
+      }
+
     case _constants2.default.CURRENT_CHALLENGE_PARTICIPANTS:
       return _extends({}, state, { participants: action.participants });
     case _constants2.default.SET_CURRENT_CHALLENGE:
       return _extends({}, state, { currentChallenge: action.challenge, channel: action.channel });
     case _constants2.default.CURRENT_CHALLENGE_RESPONSE:
-      return _extends({}, state, { currentChallenge: action.challenge, currentParticipant: action.user });
+      var newState = Object.assign([], state.participants);
+
+      var indexOfWasTyping = state.participants.findIndex(function (p) {
+        return p.typing;
+      });
+
+      var indexOfCurrentlyTyping = state.participants.findIndex(function (p) {
+        return p.user_id == action.challenge_state.typing_user_id;
+      });
+      // if was typing exist and is NOT the same as currently
+      if (indexOfWasTyping >= 0 && indexOfWasTyping != indexOfCurrentlyTyping) {
+        var wasTyping = newState.splice(indexOfWasTyping, 1)[0];
+        var currentlyTyping = newState.splice(indexOfCurrentlyTyping, 1)[0];
+        wasTyping.typing = false;
+        currentlyTyping.typing = true;
+        return _extends({}, state, { currentChallenge: action.challenge, participants: [].concat(_toConsumableArray(newState), [wasTyping, currentlyTyping]) });
+      }
+
+      // if was typing is the same as currently typing 
+      if (indexOfWasTyping >= 0 && indexOfWasTyping == indexOfCurrentlyTyping) {
+        debugger;
+        return _extends({}, state, { currentChallenge: action.challenge });
+      }
+
+      // if was typing does not exist
+      if (indexOfWasTyping == -1) {
+        debugger;
+        var currentlyTyping = newState.splice(indexOfCurrentlyTyping, 1)[0];
+        currentlyTyping.typing = true;
+        return _extends({}, state, { currentChallenge: action.challenge, participants: [].concat(_toConsumableArray(newState), [currentlyTyping]) });
+      }
     case _constants2.default.CURRENT_CHALLENGE_LANGUAGE:
       return _extends({}, state, { language: action.language });
     case _constants2.default.CURRENT_CHALLENGE_CHAT_MESSAGES:
@@ -33726,12 +33779,8 @@ var ChallengeParticipants = function (_Component) {
   _createClass(ChallengeParticipants, [{
     key: 'renderParticipants',
     value: function renderParticipants() {
-      var _this2 = this;
-
       return this.props.participants.map(function (user) {
-        var currentParticipant = _this2.props.currentParticipant;
-
-        if (currentParticipant && user.user_id == currentParticipant.id) {
+        if (user.typing) {
           return _react2.default.createElement(
             'li',
             { key: user.user_id, style: glow, className: 'loading' },
@@ -34351,27 +34400,24 @@ var ChallengesShow = function (_React$Component) {
   }, {
     key: 'removeCurrentParticipantTyping',
     value: function removeCurrentParticipantTyping(text) {
-      var _props5 = this.props,
-          channel = _props5.channel,
-          dispatch = _props5.dispatch;
-
-      dispatch(_currentChallenge2.default.updateCurrentParticipant(channel));
+      // const {channel, dispatch} = this.props;
+      // dispatch(Actions.removeCurrentParticipantTyping(channel))
     }
   }, {
     key: 'submitMessage',
     value: function submitMessage(message) {
-      var _props6 = this.props,
-          channel = _props6.channel,
-          dispatch = _props6.dispatch;
+      var _props5 = this.props,
+          channel = _props5.channel,
+          dispatch = _props5.dispatch;
 
       dispatch(_currentChallenge2.default.submitChatMessage(channel, message));
     }
   }, {
     key: 'render',
     value: function render() {
-      var _props7 = this.props,
-          channel = _props7.channel,
-          dispatch = _props7.dispatch;
+      var _props6 = this.props,
+          channel = _props6.channel,
+          dispatch = _props6.dispatch;
 
       return _react2.default.createElement(
         'div',
@@ -34409,8 +34455,7 @@ var ChallengesShow = function (_React$Component) {
             'div',
             { className: 'col-lg-3 col-md-3 col-sm-3' },
             _react2.default.createElement(_challengeParticipants2.default, {
-              participants: this.props.currentChallenge.participants,
-              currentParticipant: this.props.currentChallenge.currentParticipant })
+              participants: this.props.currentChallenge.participants })
           )
         ),
         _react2.default.createElement(

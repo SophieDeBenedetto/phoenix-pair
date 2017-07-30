@@ -95,8 +95,8 @@ class ChallengesShow extends React.Component {
   }
 
   removeCurrentParticipantTyping(text) {
-    const {channel, dispatch} = this.props;
-    dispatch(Actions.updateCurrentParticipant(channel))
+    // const {channel, dispatch} = this.props;
+    // dispatch(Actions.removeCurrentParticipantTyping(channel))
   }
 
   submitMessage(message) {
@@ -131,8 +131,7 @@ class ChallengesShow extends React.Component {
           </div>
           <div className="col-lg-3 col-md-3 col-sm-3">
             <ChallengeParticipants
-              participants={this.props.currentChallenge.participants}
-              currentParticipant={this.props.currentChallenge.currentParticipant}/>
+              participants={this.props.currentChallenge.participants}/>
           </div>
         </div>
         <div className="row col-lg-3 col-md-3 col-sm-3">

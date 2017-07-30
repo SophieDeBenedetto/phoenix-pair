@@ -2,35 +2,39 @@ require IEx;
 defmodule PhoenixPair.ChallengeChannel do
   use PhoenixPair.Web, :channel
   alias PhoenixPair.{Challenge, User, Message, Chat}
+  alias PhoenixPair.ChallengeChannel.{Monitor}
   alias PhoenixPair.ChallengePresence
 
 
   def join("challenges:" <> challenge_id, _params, socket) do
     challenge = get_challenge(challenge_id)
-    send(self, :after_join)
-    
+    send(self, {:after_join, challenge})
+
     {:ok, %{challenge: challenge}, assign(socket, :challenge, challenge)}
   end
 
-  def handle_info(:after_join, socket) do
+  def handle_info({:after_join, challenge}, socket) do
     {:ok, _ } = ChallengePresence.track(socket, current_user(socket).id, %{
-      typing: false, 
+      typing: false,
       first_name: current_user(socket).first_name, 
       user_id: current_user(socket).id
     })
     push socket, "presence_state", ChallengePresence.list(socket)
+    Monitor.participant_joined(challenge.id)
+    broadcast! socket, "user:joined", %{challenge_state: Monitor.get_challenge_state(challenge.id)}
     {:noreply, socket}
   end
 
 
-  def handle_in("response:update", %{"response" => response, "user" => user}, socket) do
+  def handle_in("response:update", %{"response" => response, "user_id" => user_id}, socket) do
     challenge = current_challenge(socket)
     |> Ecto.Changeset.change(%{response: response})
     
     case Repo.update challenge do
-      {:ok, struct}       ->
-        challenge_state = Monitor.current_participant_typing(struct.id, user)
-        broadcast! socket, "response:updated", %{challenge: struct, user: challenge_state[:user]}
+      {:ok, struct}    
+         ->
+        challenge_state = Monitor.current_participant_typing(struct.id, user_id)
+        broadcast! socket, "response:updated", %{challenge: struct, challenge_state: challenge_state}
         {:noreply, socket}
       {:error, changeset} ->
         {:reply, {:error, %{error: "Error updating challenge"}}, socket}
@@ -57,15 +61,6 @@ defmodule PhoenixPair.ChallengeChannel do
         {:reply, {:error, %{error: "Error creating message for chat #{chat_id}"}}, socket}
     end
   end
-
-  # def terminate(_reason, socket) do
-  #   # %{participants: participant_ids} = Monitor.participant_left(current_challenge(socket).id, current_user(socket).id)
-  #   # users = collect_user_json(participant_ids)
-  #   # broadcast! socket, "user:left", %{users: users}
-  #   # :ok
-  # end
-
-
 
   def get_challenge(id) do 
     Repo.get(Challenge, id)

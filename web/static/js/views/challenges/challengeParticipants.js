@@ -11,8 +11,7 @@ const glow = {
 class ChallengeParticipants extends Component {
   renderParticipants() {
     return this.props.participants.map((user) => {
-        const {currentParticipant} = this.props
-        if (currentParticipant && user.user_id == currentParticipant.id) {
+        if (user.typing) {
           return (
             <li key={user.user_id} style={glow} className="loading">
             {user.first_name}

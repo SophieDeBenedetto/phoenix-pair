@@ -38,11 +38,18 @@ const Actions = {
         syncPresentUsers(dispatch, presences);
       })
 
+      channel.on("user:joined", (response) => {
+        dispatch({
+          type: Constants.CURRENT_CHALLENGE_STATE,
+          challenge_state: response.challenge_state
+        });
+      })
+
       channel.on("response:updated", (response) => {
         dispatch({
           type: Constants.CURRENT_CHALLENGE_RESPONSE,
           challenge: response.challenge,
-          user: response.user
+          challenge_state: response.challenge_state
         });
       })
 
@@ -51,13 +58,7 @@ const Actions = {
           type: Constants.CURRENT_CHALLENGE_LANGUAGE,
           language: response.language
         })
-      }),
-
-      channel.on('current_participant:removed', (response) => {
-        dispatch({
-          type: Constants.CURRENT_PARTICIPANT_REMOVED
-        })
-      }),
+      })
 
       channel.on('chat:message_created', (response) => {
         dispatch({
@@ -76,7 +77,7 @@ const Actions = {
 
   updateResponse: (channel, codeResponse, currentUser) => {
     return dispatch => {
-      channel.push("response:update", {response: codeResponse, user: currentUser})
+      channel.push("response:update", {response: codeResponse, user_id: currentUser.id})
     }
   },
 
