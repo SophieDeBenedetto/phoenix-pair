@@ -1,6 +1,6 @@
 defmodule PhoenixPair.Challenge do
   use PhoenixPair.Web, :model
-  alias PhoenixPair.{Chat}
+  alias PhoenixPair.{Chat, Repo}
 
   @derive {Poison.Encoder, only: [:id, :prompt, :title, :response, :chat]}
   schema "challenges" do
@@ -18,5 +18,11 @@ defmodule PhoenixPair.Challenge do
     struct
     |> cast(params, [:prompt, :title])
     |> validate_required([:prompt, :title])
+  end
+
+  def update(challenge, response) do 
+    challenge
+    |> Ecto.Changeset.change(%{response: response})
+    |> Repo.update
   end
 end
