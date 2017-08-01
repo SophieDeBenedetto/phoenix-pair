@@ -9,7 +9,7 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
     Agent.update(__MODULE__, fn state -> do_participant_joined(state, challenge) end)
   end
 
-  def get_challenge_state(challenge) do 
+  def get_challenge_state(challenge) do
     Agent.get(__MODULE__, fn state -> state[challenge] end)
   end
 
@@ -17,15 +17,11 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
     Agent.update(__MODULE__, fn state -> do_language_update(state, challenge, language) end)
   end
 
-  def current_participant_typing(challenge, user_id) do
-    Agent.update(__MODULE__, fn state -> do_current_participant_typing(state, challenge, user_id) end)
-  end
-
   ### Private helper functions
 
-  defp do_participant_joined(state, challenge) do 
+  defp do_participant_joined(state, challenge) do
     case state[challenge] do
-      nil ->   
+      nil ->
         state
         |> Map.put(challenge, %{language: "ruby", typing_user_id: nil})
       data ->
@@ -33,7 +29,7 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
     end
   end
 
-  defp do_language_update(state, challenge, language) do 
+  defp do_language_update(state, challenge, language) do
     case state[challenge] do
       nil ->
         state
@@ -43,19 +39,9 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
     end
   end
 
-  defp do_current_participant_typing(state, challenge, user) do
-    case state[challenge] do
-      nil ->
-        state 
-        |> Map.put(challenge, %{typing_user_id: user})
-      data ->
-        update_state(user, state, challenge, :typing_user_id)
-    end
-  end
-
   ### second class helpers
 
-  defp update_state(content, state, challenge, key) do 
+  defp update_state(content, state, challenge, key) do
     put_in(state, [challenge, key], content)
   end
 end

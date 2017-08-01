@@ -16,8 +16,8 @@ class ChallengesShow extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      challenge: {}, 
-      theme: 'material', 
+      challenge: {},
+      theme: 'material',
       language: this.props.language,
       showChat: false
     }
@@ -111,10 +111,10 @@ class ChallengesShow extends React.Component {
         <div>
           <div className="col-lg-6 col-md-6 col-sm-3">
             <div className="row">
-              <ThemeOptions 
+              <ThemeOptions
                 selectedTheme={this.state.theme}
                 setTheme={::this.setTheme}/>
-              <LanguageOptions 
+              <LanguageOptions
                 language={this.props.language}
                 setLanguage={::this.setLanguage}/>
             </div>
@@ -125,7 +125,7 @@ class ChallengesShow extends React.Component {
                 language={this.state.language}
                 removeCurrentParticipantTyping={::this.removeCurrentParticipantTyping}
                 updateChallengeResponse={::this.updateChallengeResponse}/>
-              <ChallengeDetails 
+              <ChallengeDetails
                 challenge={this.state.challenge}/>
             </div>
           </div>
@@ -135,13 +135,13 @@ class ChallengesShow extends React.Component {
           </div>
         </div>
         <div className="row col-lg-3 col-md-3 col-sm-3">
-          <ChallengeChat 
+          <ChallengeChat
             showChat={this.state.showChat}
             submitMessage={::this.submitMessage}
             currentUser={this.props.currentUser}
             messages={this.props.chat ? this.props.chat.messages : []}/>
         </div>
-      </div> 
+      </div>
     )
   }
 }

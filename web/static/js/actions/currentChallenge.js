@@ -8,9 +8,9 @@ window.Presence = Presence
 const syncPresentUsers = (dispatch, presences) => {
   const participants = [];
   Presence.list(presences).map(p => {participants.push(p.metas[0])})
-  dispatch({ 
-    type: Constants.CURRENT_CHALLENGE_PARTICIPANTS, 
-    participants 
+  dispatch({
+    type: Constants.CURRENT_CHALLENGE_PARTICIPANTS,
+    participants
   });
 };
 
@@ -48,8 +48,7 @@ const Actions = {
       channel.on("response:updated", (response) => {
         dispatch({
           type: Constants.CURRENT_CHALLENGE_RESPONSE,
-          challenge: response.challenge,
-          challenge_state: response.challenge_state
+          challenge: response.challenge
         });
       })
 
