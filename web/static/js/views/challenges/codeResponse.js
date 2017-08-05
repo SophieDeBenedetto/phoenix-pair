@@ -31,18 +31,27 @@ import 'codemirror/mode/erlang/erlang.js'
 class CodeResponse extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {challenge: {}}
+    this.state = {challenge: {}, typing: false}
+    setInterval(::this.checkTyping, 3000)
+  }
+
+  checkTyping() {
+    if (!this.state.typing) {
+      this.props.removeCurrentParticipantTyping()
+    }
   }
   componentWillReceiveProps(nextProps) {
     this.setState({challenge: nextProps.challenge})
   }
 
   updateChallengeResponse(codeText) {
+    this.setState({typing: true})
     this.props.updateChallengeResponse(codeText);
+    this.setState({typing: false})
   }
 
-  notTyping(e) {
-    if (!e) {
+  notTyping(focus) {
+    if (!focus) {
       this.props.removeCurrentParticipantTyping()
     }
   }
@@ -51,7 +60,8 @@ class CodeResponse extends React.Component {
     const options = {
        lineNumbers: true,
        mode: this.props.language,
-       theme: this.props.theme
+       theme: this.props.theme,
+       tabSize: 2
     }
     return (
         <Codemirror

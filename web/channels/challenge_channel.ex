@@ -1,3 +1,4 @@
+require IEx;
 defmodule PhoenixPair.ChallengeChannel do
   use PhoenixPair.Web, :channel
   alias PhoenixPair.{Challenge, User, Message, Chat}
@@ -15,7 +16,6 @@ defmodule PhoenixPair.ChallengeChannel do
   def handle_info({:after_join, challenge}, socket) do
     ChallengePresence.track_user_join(socket, current_user(socket))
     push socket, "presence_state", ChallengePresence.list(socket)
-
     Monitor.participant_joined(challenge.id)
     broadcast! socket, "user:joined", %{challenge_state: challenge_state(challenge.id)}
 
@@ -53,7 +53,7 @@ defmodule PhoenixPair.ChallengeChannel do
   end
 
   def handle_in("current_participant_typing:remove", _, socket) do
-    ChallengePresence.do_user_update(socket, user, %{typing: false})
+    ChallengePresence.do_user_update(socket, current_user(socket), %{typing: false})
      push socket, "presence_state", ChallengePresence.list(socket)
     {:noreply, socket}
   end
