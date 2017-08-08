@@ -19,4 +19,4 @@ A real-time pair programming app that allows multiple users to collaborate on sm
 ## Learn about it!
 I wrote some stuff:
 * [Authentication with React Router 4 and Guardian JWT](http://www.thegreatcodeadventure.com/jwt-auth-with-phoenix-and-react-router-4/)
-* Tracking Users with Phoenix Presence
+* [Tracking Users with Phoenix Presence](http://www.thegreatcodeadventure.com/tracking-user-state-with-phoenix-presence-react-and-redux/)
