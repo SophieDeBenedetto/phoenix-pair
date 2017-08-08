@@ -1,4 +1,3 @@
-require IEx;
 defmodule PhoenixPair.ChallengeChannel do
   use PhoenixPair.Web, :channel
   alias PhoenixPair.{Challenge, User, Message, Chat}
@@ -54,7 +53,7 @@ defmodule PhoenixPair.ChallengeChannel do
 
   def handle_in("current_participant_typing:remove", _, socket) do
     ChallengePresence.do_user_update(socket, current_user(socket), %{typing: false})
-     push socket, "presence_state", ChallengePresence.list(socket)
+    push socket, "presence_state", ChallengePresence.list(socket)
     {:noreply, socket}
   end
 
