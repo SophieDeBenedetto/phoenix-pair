@@ -5,12 +5,8 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
     Agent.start_link(fn -> initial_state end, name: __MODULE__)
   end
 
-  def participant_joined(challenge) do
-    Agent.update(__MODULE__, fn state -> do_participant_joined(state, challenge) end)
-  end
-
   def get_challenge_state(challenge) do
-    Agent.get(__MODULE__, fn state -> state[challenge] end)
+    Agent.get(__MODULE__, fn state -> get_challenge_state(state, challenge) end)
   end
 
   def language_update(challenge, language) do
@@ -19,13 +15,14 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
 
   ### Private helper functions
 
-  defp do_participant_joined(state, challenge) do
+  defp get_challenge_state(state, challenge) do 
     case state[challenge] do
       nil ->
         state
-        |> Map.put(challenge, %{language: "ruby", typing_user_id: nil})
+        |> Map.put(challenge, %{language: "ruby"})
+        |> Map.get(challenge)
       data ->
-        state
+        state[challenge]
     end
   end
 
