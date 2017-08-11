@@ -1,5 +1,5 @@
 defmodule PhoenixPair.ChallengeChannel.Monitor do
-  use GenServer
+  # use Agent
 
   def start_link(initial_state) do
     Agent.start_link(fn -> initial_state end, name: __MODULE__)
@@ -10,7 +10,7 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
   end
 
   def language_update(challenge, language) do
-    Agent.update(__MODULE__, fn state -> do_language_update(state, challenge, language) end)
+    Agent.update(__MODULE__, fn state -> language_update(state, challenge, language) end)
   end
 
   ### Private helper functions
@@ -26,7 +26,7 @@ defmodule PhoenixPair.ChallengeChannel.Monitor do
     end
   end
 
-  defp do_language_update(state, challenge, language) do
+  defp language_update(state, challenge, language) do
     case state[challenge] do
       nil ->
         state
