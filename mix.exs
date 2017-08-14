@@ -39,7 +39,8 @@ defmodule PhoenixPair.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.0"},
-     {:guardian, "~> 0.9.0"}]
+     {:guardian, "~> 0.9.0"},
+     {:distillery, "~> 1.1"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

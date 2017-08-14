@@ -1,0 +1,15 @@
+version: 0.0
+os: linux 
+hooks:
+  ApplicationStop:
+    - location: scripts/stop.sh
+      runas: owner
+  AfterInstall:
+    - location: scripts/compile.sh
+      runas: root
+  ApplicationStart:
+    - location: scripts/start.sh
+      runas: owner
+  ValidateService:
+    - location: scripts/verify.sh
+      runas: owner
