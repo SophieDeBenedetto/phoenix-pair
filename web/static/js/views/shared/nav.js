@@ -2,7 +2,8 @@ import React, { Component }   from 'react';
 import { Link }               from 'react-router-dom'
 import {Navbar, Nav, NavItem} from 'react-bootstrap'
 import { connect }            from 'react-redux';
-import Actions                from '../../actions/sessions'
+import Actions                from '../../actions/sessions';
+import UserActions            from '../../actions/users';
 
 class Navigation extends Component {
   addActive(e) {
@@ -33,6 +34,13 @@ class Navigation extends Component {
     }
   }
 
+  componentWillMount() {
+    if (!this.props.currentUser) {
+      const {dispatch} = this.props;
+      dispatch(UserActions.getCurrentUser())
+    }
+  }
+
   render() {
     return (
       <nav className="navbar navbar-default">
@@ -53,6 +61,7 @@ class Navigation extends Component {
 }
 
 function mapStateToProps(state) {
+  debugger;
   return {currentUser: state.session.currentUser}
 }
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 class App extends Component {
   render() {
+    debugger;
     return (
       <div className="container">
         <div className="jumbotron">

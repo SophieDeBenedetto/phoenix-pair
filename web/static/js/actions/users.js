@@ -7,7 +7,7 @@ const Actions = {};
 
 Actions.getCurrentUser = () => {
   return dispatch => {
-    httpGet('/api/v1/users/me')
+    httpGet('/api/v1/current_user')
     .then((data) => {
       setCurrentUser(dispatch, data.user);
     })

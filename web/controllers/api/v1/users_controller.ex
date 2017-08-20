@@ -1,11 +1,9 @@
-require IEx;
 defmodule PhoenixPair.UsersController do
   use PhoenixPair.Web, :controller
 
   alias PhoenixPair.{GuardianSerializer}
 
-
-  def me(conn, _params) do
+  def me(conn, params) do
     token = conn.assigns.guardian_default_jwt
     case Guardian.decode_and_verify(token) do
       {:ok, claims} ->
