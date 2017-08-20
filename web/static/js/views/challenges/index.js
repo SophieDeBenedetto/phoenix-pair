@@ -1,7 +1,9 @@
 import React, {Component}  from 'react';
 import { connect }         from 'react-redux';
-import { Link, Route}      from 'react-router-dom';
-import ChallengesShow      from './show'
+import { Route }           from 'react-router-dom';
+import ChallengesShow      from './show';
+import WelcomeMessage      from './welcomeMessage';
+import ChallengeListItem   from './challengeListItem';
 import { setDocumentTitle, renderErrorsFor } from '../../utils';
 import challengesActions        from '../../actions/challenges';
 import currentChallengeActions  from '../../actions/currentChallenge';
@@ -52,36 +54,33 @@ class ChallengesIndex extends Component {
   renderWelcome() {
     if (!this.state.currentChallengeId) {
       return (
-        <div className="col-lg-4 col-md-4 col-sm-4 welcome-msg">
-          <div className="alert alert-dismissible alert-success">
-            <strong>Welcome! </strong>Select a challenge to get started!
-          </div>
-        </div>
+       <WelcomeMessage/>
       )
     }
   }
-  render() {
+
+  challengesList() {
     const { challenges } = this.props
 
-    const list = challenges.map((challenge) => {
-      return (
-        <li 
-          onClick={::this.addActive} 
-          data-id={challenge.id} 
-          key={challenge.id} 
-          className={"list-group-item " + (this.state.currentChallengeId == challenge.id ? "active" : "")} >
-            <Link to={`/challenges/${challenge.id}`}>
-              {challenge.title}
-            </Link>
-        </li>
-      )
-    })
+    return (
+      challenges.map((challenge) => {
+        return (
+          <ChallengeListItem 
+            challenge={challenge}
+            onClick={::this.addActive}
+            currentChallengeId={this.state.currentChallengeId}/>
+        )
+      })
+    )
+  }
+
+  render() {
     return(
       <div style={style}>
         <div className="row">
           <div className="col-lg-3 col-md-3 col-sm-4">
             <ul className="list-group">
-              {list}
+              {this.challengesList()}
             </ul>
           </div>
           {this.renderWelcome()}
