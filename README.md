@@ -2,7 +2,6 @@
 
 Pair on coding challenges with real humans in real-time! Users can select a coding challenge to collaborate on with the use of a shared text editor and chat allowing them to work together with the other users in the "challenge room".
 
-
 ## How Does it Work
 
 Phoenix Pair contains a Phoenix API that serves challenge data to a React + Redux client-side app. The Phoenix API leverages Guardian to authenticate users with JWT.
@@ -20,9 +19,15 @@ The tracking of which user is currently typing is managed by the `ChallengePrese
 ## Running the App
 
 * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Seed the DB with some code challenge prompts `mix run priv/repo/seeds.exs`
-  * Start Phoenix endpoint with `mix phoenix.server`
+* Create and migrate your database with `mix ecto.create && mix ecto.migrate`
+* Seed the DB with some code challenge prompts `mix run priv/repo/seeds.exs`
+* Start Phoenix endpoint with `mix phoenix.server`
+* Register or sign in as the test user:
+
+```
+username: moebi@email.com
+password: password
+```
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
