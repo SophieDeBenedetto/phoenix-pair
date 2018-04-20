@@ -19,3 +19,13 @@ The tracking of which user is currently typing is managed by the `ChallengePrese
 
 ## Running the App
 
+* Install dependencies with `mix deps.get`
+  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
+  * Seed the DB with some code challenge prompts `mix run priv/repo/seeds.exs`
+  * Start Phoenix endpoint with `mix phoenix.server`
+
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+### To DO
+- write seed file
+- run the app w/ react and test everything out again
