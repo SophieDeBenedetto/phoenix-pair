@@ -13,8 +13,12 @@ The currently selected programming lanuage and tracked and broadcast with the he
 The tracking of which user is currently typing is managed by the `ChallengePresence` module. This module leverages PhoenixPresence to track user state in the channel and expose it to all subscribing clients.
 
 ## Resources
-* JWT Auth w/ Phoenix, Guardian, React/Redux
-* Phoenix Presence
+
+I wrote some things!
+
+* [JWT Auth w/ Phoenix and React Router 4](http://www.thegreatcodeadventure.com/jwt-auth-with-phoenix-and-react-router-4/)
+* [Using Agent to Maintain Channel State in Phoenix](http://www.thegreatcodeadventure.com/using-genserver-to-maintain-channel-state-in-phoenix/)
+* [Tracking User State with Phoenix Presence, React and Redux](http://www.thegreatcodeadventure.com/tracking-user-state-with-phoenix-presence-react-and-redux/)
 
 ## Running the App
 
@@ -31,6 +35,3 @@ password: password
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-### To DO
-- write seed file
-- run the app w/ react and test everything out again
