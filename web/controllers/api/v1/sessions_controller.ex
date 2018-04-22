@@ -7,16 +7,16 @@ defmodule PhoenixPair.SessionsController do
 
   def create(conn, %{"session" => session_params}) do
     case PhoenixPair.Session.authenticate(session_params) do
-    {:ok, user} ->
-      {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
-      conn
-        |> put_status(:created)
-        |> render("show.json", jwt: jwt, user: user)
-    :error ->
-      conn
-      |> put_status(:unprocessable_entity)
-      |> render("error.json")
-    end
+      {:ok, user} ->
+        {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
+        conn
+          |> put_status(:created)
+          |> render("show.json", jwt: jwt, user: user)
+      :error ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json")
+      end
   end
 
   def delete(conn, _) do 

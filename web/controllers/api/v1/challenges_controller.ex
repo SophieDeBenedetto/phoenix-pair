@@ -1,4 +1,3 @@
-require IEx;
 defmodule PhoenixPair.ChallengesController do 
   use PhoenixPair.Web, :controller
 

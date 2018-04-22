@@ -1,29 +1,13 @@
-import React, {Component}   from 'react';
-import { setDocumentTitle, renderErrorsFor } from '../../utils';
-
-const glow = {
-  listStyle: 'none',
-  textShadow: "#6AD8C9 0 0 10px",
-  fontStyle: 'italic'
-}
-
+import React, {Component}                    from 'react';
+import ParticipantListItem                   from './participantListItem'
 
 class ChallengeParticipants extends Component {
   renderParticipants() {
     return this.props.participants.map((user) => {
-        if (user.typing) {
-          return (
-            <li key={user.user_id} style={glow} className="loading">
-            {user.first_name}
-            </li>
-          )
-        }else {
-          return (
-          <li key={user.user_id} style={{listStyle: 'none'}}>
-            {user.first_name}
-          </li>   
-          )
-        }
+      return (
+        <ParticipantListItem 
+          user={user}/>
+      )
     })
   }
 

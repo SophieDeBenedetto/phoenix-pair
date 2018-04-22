@@ -1,6 +1,5 @@
 import React, {Component}   from 'react';
-import { setDocumentTitle, renderErrorsFor } from '../../utils';
-
+import MessageListItem      from './messageListItem';
 
 class ChallengeChat extends Component {
 
@@ -34,23 +33,11 @@ class ChallengeChat extends Component {
 
   renderMessages() {
     return this.props.messages.map(m => {
-      if (m.user.id == this.props.currentUser.id) {
-        const width = `${m.content.length + 100}px`   
-        return(
-          <span>
-            <li className="speech-bubble" style={{listStyle: "none", textAlign: "right", marginLeft: width}}>{m.content}</li>
-            <p style={{marginTop: "-3%", color: "#268bd2", textAlign: "right"}}>me</p>
-          </span>
-        )
-      } else {
-        const width = `${m.content.length + 100}px`
-        return(
-          <span>
-            <li className="speech-bubble-other" style={{listStyle: "none", marginRight: width}}>{m.content}</li>
-            <p style={{marginTop: "-3%", color: "#d33682"}}>{m.user.first_name}</p>
-          </span>
-        )
-      }
+      return (
+        <MessageListItem
+          currentUser={this.props.currentUser} 
+          message={m} />
+      )
     })
   }
 

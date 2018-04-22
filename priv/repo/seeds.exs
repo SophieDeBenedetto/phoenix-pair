@@ -42,4 +42,3 @@ changeset = PhoenixPair.Challenge.changeset(%PhoenixPair.Challenge{}, challenge_
 challenge = PhoenixPair.Repo.insert!(changeset)
 changeset = PhoenixPair.Chat.changeset(%PhoenixPair.Chat{}, %{challenge_id: challenge.id})
 PhoenixPair.Repo.insert!(changeset)
-

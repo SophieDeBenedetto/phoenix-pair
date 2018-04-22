@@ -24,10 +24,7 @@ const AuthenticatedRoute = ({ component: Component, ...rest }) => (
     localStorage.getItem('phoenixAuthToken') ? (
       <Component {...props}/>
     ) : (
-      <Redirect to={{
-        pathname: '/sign_in',
-        state: { from: props.location }
-      }}/>
+      "HI"
     )
   )}/>
 )
