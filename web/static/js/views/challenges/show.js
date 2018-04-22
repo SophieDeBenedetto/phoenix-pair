@@ -109,8 +109,8 @@ class ChallengesShow extends React.Component {
     return (
       <div>
         <div>
-          <div className="col-lg-6 col-md-6 col-sm-3">
-            <div className="row">
+          <div className="col-lg-12 col-md-6 col-sm-3" style={{width: '900px'}}>
+            <div className="row" style={{width: '50%'}}>
               <ThemeOptions
                 selectedTheme={this.state.theme}
                 setTheme={::this.setTheme}/>
@@ -118,28 +118,28 @@ class ChallengesShow extends React.Component {
                 language={this.props.language}
                 setLanguage={::this.setLanguage}/>
             </div>
-            <div className="row">
+            <div className="row" style={{overflow: 'visible', height: '300px'}}>
               <CodeResponse
                 challenge={this.state.challenge}
                 theme={this.state.theme}
                 language={this.state.language}
                 removeCurrentParticipantTyping={::this.removeCurrentParticipantTyping}
                 updateChallengeResponse={::this.updateChallengeResponse}/>
+              <div className="col-lg-4 col-md-3 col-sm-3">
+                <ChallengeParticipants
+                  participants={this.props.currentChallenge.participants}/>
+                <ChallengeChat
+                  showChat={this.state.showChat}
+                  submitMessage={::this.submitMessage}
+                  currentUser={this.props.currentUser}
+                  messages={this.props.chat ? this.props.chat.messages : []}/>
+              </div>
+            </div>
+            <div className="row">
               <ChallengeDetails
                 challenge={this.state.challenge}/>
-            </div>
+              </div>
           </div>
-          <div className="col-lg-3 col-md-3 col-sm-3">
-            <ChallengeParticipants
-              participants={this.props.currentChallenge.participants}/>
-          </div>
-        </div>
-        <div className="row col-lg-3 col-md-3 col-sm-3">
-          <ChallengeChat
-            showChat={this.state.showChat}
-            submitMessage={::this.submitMessage}
-            currentUser={this.props.currentUser}
-            messages={this.props.chat ? this.props.chat.messages : []}/>
         </div>
       </div>
     )

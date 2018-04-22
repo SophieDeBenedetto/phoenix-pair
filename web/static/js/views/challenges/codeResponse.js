@@ -64,12 +64,14 @@ class CodeResponse extends React.Component {
        tabSize: 2
     }
     return (
-        <Codemirror
-          refs="codeMirror"
-          value={this.state.challenge.response}
-          onFocusChange={::this.notTyping}
-          onChange={::this.updateChallengeResponse}
-          options={options}/>
+        <div style={{width: "600px"}}>
+          <Codemirror
+            refs="codeMirror"
+            value={this.state.challenge.response}
+            onFocusChange={::this.notTyping}
+            onChange={::this.updateChallengeResponse}
+            options={options}/>
+        </div>
     )
   }
 }

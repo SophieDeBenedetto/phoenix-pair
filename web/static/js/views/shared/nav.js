@@ -20,15 +20,15 @@ class Navigation extends Component {
     if (this.props.currentUser) {
       return (
         <ul className="nav navbar-nav navbar-right">
-          <li><a>Hi, {this.props.currentUser.first_name}</a></li>
-          <li onClick={::this.logOut}><a>sign out</a></li>
+          <li className="nav-item"><a>Hi, {this.props.currentUser.first_name}</a></li>
+          <li className="nav-item" onClick={::this.logOut}><a>sign out</a></li>
         </ul>
       )
     } else {
       return (
         <ul className="nav navbar-nav navbar-right">
-          <li onClick={::this.addActive}><Link to="/sign_up"> sign up</Link></li>
-          <li onClick={::this.addActive}><Link to="/sign_in"> sign in</Link></li>
+          <li className="nav-item" onClick={::this.addActive}><Link to="/sign_up"> sign up</Link></li>
+          <li className="nav-item" onClick={::this.addActive}><Link to="/sign_in"> sign in</Link></li>
         </ul>
       )
     }
@@ -43,16 +43,14 @@ class Navigation extends Component {
 
   render() {
     return (
-      <nav className="navbar navbar-default">
+      <nav className="navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
-          <div className="navbar-header">
-            <a className="navbar-brand" href="/">Phoenix Pair</a>
-          </div>
+          <a className="navbar-brand" href="/">Phoenix Pair</a>
           <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul className="nav navbar-nav">
               <li onClick={::this.addActive}><Link to="/challenges">challenges</Link></li>
             </ul>
-              {::this.authLinks()}
+            {::this.authLinks()}
           </div>
         </div>
       </nav>
@@ -61,7 +59,6 @@ class Navigation extends Component {
 }
 
 function mapStateToProps(state) {
-  debugger;
   return {currentUser: state.session.currentUser}
 }
 
