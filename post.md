@@ -21,34 +21,9 @@ Our app is pretty simple (so far). We have a User model and table and a Challeng
 
 A user can come and go from a challenge room, so there isn't an enforced relationship between users and challenges. In other words, user's do not belong to challenges or vice versa. 
 
-Why do we need something special like Phoenix Channels to implement real-time features? Well, our normal web interactions just aren't capable of such behavior.
-
-## HTTP Is Not Enough
-
-We know that HTTP is uni-directional. The client sends a request to the server and the server responds back to the client. 
-
-![](./blog_images/http.svg)
-
-The server isn't capable of sending out info to the client un-prompted and the client, by default, isn't listening for any such unrequested info. 
-
-But this is exactly the behavior we want to implement with our real-time collaborative text-editing feature. If one person is typing, we want everyone else present in the "challenge room" to see what is being typed, _without_ having to send a request for that information. 
-
-There are a few solutions to get around this uni-directional behavior. We can implement JavaScript long-polling, in which the client sends periodic requests for new information to the server. Or, we can leverage WebSocket protocol. We'll be using Phoenix Channels with the second option--WebSockets. 
-
-## WebSocket Protocol
-
-WebSocket protocol allows us to implement bi-directional, or duplex, communication channels between the client and the server over a single TCP connection.
-
-An HTTP request is initiated by the client and dies once the client receives a response from the server. WebSocket communication, on the other hand, allows us to hold a two-way communication channel open between the client in the server, allowing the server to broadcast information out to a set of subscribing clients. 
-
-![](./blog_images/websockets.svg)
-
 ## What are Phoenix Channels?
 
-Now that we know why HTTP alone won't support the features we want to build, let's take a closer look at the tool we'll be using: Phoenix Channels.
-
-
-[Phoenix Channels](https://hexdocs.pm/phoenix/channels.html) allow us to establish bi-directional communication between message senders and receivers. 
+[Phoenix Channels](https://hexdocs.pm/phoenix/channels.html) are the perfect fit for real-time features. Channels allow us to establish bi-directional communication between message senders and receivers. 
   
   > Channels are based on a simple idea - sending and receiving messages. Senders broadcast messages about topics. Receivers subscribe to topics so that they can get those messages.
 
@@ -301,29 +276,9 @@ And that's it! Now that we've build out our challenge channel and starting broad
 
 We already have the ability for users to broadcast messages to all of the clients subscribing to a channel. But we want to give our users awareness of who these clients are. We want to list out the people currently in a given "challenge room" *and* we want to indicate which user is currently typing into the shared text editor. 
 
-So, how can we sync and share information regarding user presence across all of our subscribing clients?
+We'll use Phoenix Presence to store and expose this user-state-related info. 
 
-There are a number of ways to store and expose this information, but I'm going to tell you why Phoenix Presence is the *right* way to do it. 
-
-### The Wrong Way to Track User State
-
-#### Storing User Presence in the Database
-
-You *could* store user presence in the database. Whenever someone joins a challenge room you could update a record in the database to indicate that the user now belongs to that challenge room. 
-
-However, user presence in a given challenge room is transient. Users will come and go and storing their presence in a challenge room in the database feels heavy handed and unnecessary. 
-
-#### Building Your Own State Manager with GenServer
-
-You absolutely can leverage Elixir's `GenServer` module to store user presence in a given channel. But its a _lot_ of work. You would be responsible for building your own module that uses `GenServer`, defining the structure of your store and hand-rolling all your own store updating and fetching functions. Sounds like a drag. 
-
-#### Storing User Presence in a Centralized Data Store
-
-Another option is to use a centralized data store like Redis to store user state. 
-
-However, Elixir is has so many built-in distributed data stores which are by nature more resilient than a centralized option like Redis. We choose Elixir for just this reason, so let's take advantage of these features. 
-
-### Phoenix Presence: The Right Way to Track User State
+### Phoenix Presence
 The Phoenix Presence module allows us to:
 
 * Store and expose topic-specific information to all of a channel's subscribing clients, across all of our application's distributed nodes. 
@@ -605,10 +560,6 @@ Any calls to `Presence.update`, just like calls to `Presence.track`, will trigge
 The last event that impacts user presence in a challenge channel is the departure of a user. Once again, Phoenix Presence abstracts away a lot of the work for us. All we have to do to remove a user from the Presence store and broadcast the updated list to the remaining clients is call `channel.leave()` on the front-end. 
 
 This will automatically update the Presence store's list of users and send out a `"presence_diff"` event. 
-
-
-
-
 
 
 
