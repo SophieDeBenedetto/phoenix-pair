@@ -359,7 +359,11 @@ Now we're ready to start using our module to track user presence.
 
 ### Tracking Present Users
 
-When a user joins a challenge channel, we will add them to Presence's list of present users. Then, we'll use Presence to make that list available to both the client who just joined _and_ the existing subscribers. 
+When a user joins a challenge channel, we will add them to Presence's list of present users. Then, we'll use Presence to make that list available to both the client who just joined _and_ the existing subscribers.
+
+Our code flow will proceed like this:
+
+![](./blog_images/phoenix_presence_join.svg) 
 
 Our `ChallengeChannel` already has a `join` function that fires when a user joins the channel. We'll define an `after_join` function where we'll call on Presence to add this user to list. 
 
