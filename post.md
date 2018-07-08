@@ -7,7 +7,7 @@ We're building out a Phoenix app that allows users to collaborate on coding chal
 
 Here's where our real-time feature comes in. All of the users in the challenge room should be able to see what a given user is typing *as they are typing it*. We'll leverage Phoenix Channels to support this functionality. 
 
-However, not only should they see *what* a user is typing, they should see an indication of *who* is typing it. This is where our need to track user state comes in. We'll use Phoenix Presence to build out this behavior. 
+Not only should our users see *what* someone is typing, they should see an indication of *who* is typing it. This is where our need to track user state comes in. We'll use Phoenix Presence to build out this behavior. 
 
 Here's a look at the final product we're going for:
 
@@ -17,9 +17,13 @@ Before we get started, let's take a brief look at our domain model.
 
 ### The Domain Model
 
-Our app is pretty simple (so far). We have a User model and table and a Challenge model and table. A challenge consists of a prompt and a response. 
+Our app is pretty simple. We have a `User` model and table and a `Challenge` model and table. A challenge consists of a `prompt` and a `response`. 
 
-A user can come and go from a challenge room, so there isn't an enforced relationship between users and challenges. In other words, user's do not belong to challenges or vice versa. 
+A user can come and go from a challenge room, so there isn't an enforced relationship between users and challenges. In other words, users do not belong to challenges or vice versa. 
+
+## Part I: Real-Time Features with Phoenix Channels
+
+We'll start with our first real-time feature: collaborative text-editing. Before we can use Phoenix Channels to build this feature, let's learn what they are and how they work.
 
 ## What are Phoenix Channels?
 
@@ -31,23 +35,22 @@ Phoenix Channels are actually made up of a number of components that work togeth
 
 ## How Do Phoenix Channels Work?
 
-There are two pieces to the Phoenix Channel puzzle: 
+There are two pieces to the Phoenix Channels puzzle: 
 
 * Establishing a socket connection between client and server
 * Broadcasting messages between senders and recipients
 
 ### Establishing the Socket Connection
 
-The client will begin by connecting to a socket via one of two transport mechanisms: WebSockets or long polling. We'll stick with WebSockets for out implementation. 
+The client will begin by connecting to a socket via one of two transport mechanisms: WebSockets or long polling. We'll stick with WebSockets for our implementation. 
 
 Once the client has connected to the socket, it uses that network connection to join a channel. Phoenix Channels will create one server process per topic for a given client. 
 
-When a client successfully establishes this connection, Phoenix Channels initializes an instance of `%Phoenix.Socket{}`. The channel server then retains awareness of this `socket` instance and maintains state within that instance via calls to `socket.assign` (more on that later).
+When a client successfully establishes this connection, Phoenix Channels initialize an instance of `%Phoenix.Socket{}`. The channel server then retains awareness of this `socket` instance and maintains state within that instance via calls to `socket.assign` (more on that later).
 
 ### Broadcasting Messages
 
-A client connected to a channel via a socket will sent send a message to the server via the channel. Once the message is received by the channel server, it is broadcasts out to the local PubSub server. This server in turn sends the message to any clients connected to the same channel topic on the same server. Then the PubSub server forwards the message to any remote PubSub servers running on other nodes in the cluster, which send the message out to their own subscribing clients. 
-
+A client connected to a channel via a socket will send a message to the server via the channel. Once the message is received by the channel server, it is broadcast out to the local PubSub server. This server in turn sends the message to any clients connected to the same channel topic on the same server. Then the PubSub server forwards the message to any remote PubSub servers running on other nodes in the cluster, which send the message out to their own subscribing clients. 
 
 Now that we have a basic idea of what Phoenix Channels are and how they work, we're ready to start building!
 
@@ -64,9 +67,16 @@ Let's get started.
 
 ### Step 1: Declare a WebSocket Endpoint
 
+We need to do two things to get our WebSocket endpoint up and running:
+
+* Declare the socket endpoint
+* Route requests to that endpoint to the correct channel
+
+#### Defining the Endpoint
+
 When you generate a new Phoenix app, your app's endpoint gets generated for you for free. 
 
-The [application endpoint](https://hexdocs.pm/phoenix/Phoenix.Endpoint.html) acts as the starting point for all requests to your web app. 
+The [application endpoint](https://hexdocs.pm/phoenix/Phoenix.Endpoint.html) acts as the starting point for all requests to your web app. This is where we'll define our socket endpoint.
 
 ```elixir
 defmodule PhoenixPair.Endpoint do
@@ -87,7 +97,7 @@ Here, we are declaring a socket on the `/socket` URI and telling our app that th
 
 #### Routing Socket Requests to Channels
 
-Our application generation also gave us the `UserSocket` module for free in `/channels/user_socket.ex`.
+Our app generation also gave us the `UserSocket` module for free in `/channels/user_socket.ex`.
 
 The `UserSocket` is responsible for making sure our socket requests get routed to the correct channel:
 
@@ -99,7 +109,7 @@ defmodule PhoenixPair.UserSocket do
 end
 ```
 
-Now, whenever a client sends a message whose topic starts with "challenges:", it will be routed to our `ChallengeChannel`. 
+Whenever a client sends a message whose topic starts with "challenges:", it will be routed to our `ChallengeChannel`. 
 
 Now that our socket endpoint is up and running, let's tell our client to open a socket connection.
 
@@ -111,7 +121,7 @@ We'll have our client send a socket connect request to the socket endpoint. Then
 
 #### Sending the Connect Request From the Client
 
-Phoenix Channels provides a JavaScript offering that we can use to send a socket connection request from the client.
+Phoenix Channels provides a JavaScript library that we can use to send a socket connection request from the client.
 
 
 ```javascript
@@ -159,7 +169,7 @@ Our `connect` function decodes the token from the params, finds the user from th
 assign(socket, :current_user, user)
 ```
 
-Later on, we'll be able to access this `socket` instance in our channel and identify the current via `socket.assigns.current_user`.
+Later on, we'll be able to access this `socket` instance in our channel and identify the current user via `socket.assigns.current_user`.
 
 ### Step 3: User Joins a Channel
 
@@ -180,12 +190,12 @@ import { Socket }   from 'phoenix';
 
 ...
 const channel = socket.channel(`challenges:${challengeId}`);
-channel.join().receive('ok', (response) => {
-  // do something like display the content of response.challenge
+channel.join().receive('ok', (responsePayload) => {
+  // do something like display the content of responsePayload.challenge
 });
 ```
 
-Here we've joined a challenge channel with a topic of the given challenge ID. This sends the request that gets routed via the `UserSocket` to the `ChallengesChannel`, which in turn invokes its `join` function. Let's take a look.
+Here we've joined a challenge channel with a topic of the given challenge ID. This sends the request that gets routed via the `UserSocket` to the `ChallengesChannel`, which in turn invokes its `join` function. Let's take a look at this next step now.
 
 #### Handling the Join Request on the Server
 
@@ -216,8 +226,10 @@ Now that the user has joined the channel, we're ready to build out the next face
 When a user types into the shared text editor for a given code challenge, we need to do three things:
 
 1. Send a message from the client to the server via the channel.
-2. Teach the client to respond to this message by: updating the challenge's response in the database and broadcasting the updated challenge message to all of the subscribers. 
+2. Teach the server to respond to this message by: updating the challenge's response in the database and broadcasting the updated challenge message to all of the subscribers. 
 3. Teach the subscribing clients to handle the broadcast of the message.
+
+Our overall code flow will go something like this:
 
 ![](./blog_images/phoenix_channels_broadcast.svg)
 
@@ -233,15 +245,14 @@ channel.push("response:update", {response: codeResponse})
 
 #### Handling the Message On the Server
 
-In order to handle this action in our `ChallengeChannel`, we need to define a `handle_in` function with an arity that pattern matches to the `"response:update"` message our client is sending:
+In order to handle this action in our `ChallengeChannel`, we need to define a `handle_in` function with an arity that [pattern matches](https://elixir-lang.org/getting-started/pattern-matching.html) to the `"response:update"` message our client is sending:
 
 ```elixir
 # challenge_channel.ex
 
 def handle_in("response:update", %{"response" => codeResponse, "user_id" => user_id}, socket) do
   case Challenge.update(socket.assigns.challenge, codeResponse) do
-    {:ok, challenge}
-       ->
+    {:ok, challenge} ->
       broadcast! socket, "response:updated", %{challenge: challenge}
       {:noreply, socket}
     {:error, changeset} ->
@@ -250,7 +261,7 @@ def handle_in("response:update", %{"response" => codeResponse, "user_id" => user
 end
 ```
 
-Here's where our earlier storage of the current channel within our socket's state pays off. We can retrieve the current challenge by calling `socket.assigns.challenge`. Then, we update that challenge in the DB with our new response--whatever the user typed into the shared text editor in the browser. 
+Here's where our earlier storage of the current challenge within our socket's state pays off. We can retrieve the current challenge by calling `socket.assigns.challenge`. Then, we update that challenge in the DB with our new response--whatever the user typed into the shared text editor in the browser. 
 
 Lastly, we want to broadcast out the newly updated challenge to all of our subscribing clients. We do that with the following line:
 
@@ -268,31 +279,40 @@ channel.on("response:updated", (response) => {
 })
 ```
 
-And that's it! Now that we've build out our challenge channel and starting broadcasting messages, we're ready to move on to part II: tracking user presence in the channel. 
+And that's it! Now that we've build out our challenge channel and starting broadcasting messages, we're ready to move on to Part II: tracking user presence in the channel. 
 
-## Using Phoenix Presence to Track User State
-
-### Why Do We Need to Track User State?
+## Part II: Tracking User State with Phoenix Presence
 
 We already have the ability for users to broadcast messages to all of the clients subscribing to a channel. But we want to give our users awareness of who these clients are. We want to list out the people currently in a given "challenge room" *and* we want to indicate which user is currently typing into the shared text editor. 
 
 We'll use Phoenix Presence to store and expose this user-state-related info. 
 
-### Phoenix Presence
+## What is Phoenix Presence?
 The Phoenix Presence module allows us to:
 
 * Store and expose topic-specific information to all of a channel's subscribing clients, across all of our application's distributed nodes. 
 * Store that information in a resilient and de-centralized manner.
 * Broadcast presence-related events and handle them on the front-end with ease. 
 
-### How Does Phoenix Presence Work?
+## How Does Phoenix Presence Work?
 
-Presence uses a Conflict-Free Replicated Data Type (CRDT) to store and broadcast topic-specific information to all channels with a given topic. Unlike a centralized data store like Redis, Phoenix Presence has no single point of failure and no single source of truth. This allows the Presence data store to be self-healing and replicable across all of the nodes of your application cluster. 
+Presence uses a [Conflict-Free Replicated Data Type (CRDT)](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type) to store and broadcast topic-specific information to all channels with a given topic. Unlike a centralized data store like Redis, Phoenix Presence has no single point of failure and no single source of truth. This allows the Presence data store to be self-healing and replicable across all of the nodes of your application cluster. 
 
-Now that we're convinced that Phoenix Presence is the right fit for us, we'll use it to do two things:
 
-* Display a list of present users in a given "challenge room"
-* Indicate which of these present users is currently typing in the shared text-editor.
+## Implementing Phoenix Presence
+
+We'll use Phoenix Presence to support two real-time, user presence related features:
+
+* Real-time list of users present in a given "challenge room"
+* Indication of who is typing in the shared text editor
+
+In order to implement these two features with Phoenix Presence, we need to do three things:
+
+* Incorporate the Phoenix Presence module into our app
+* Use Phoenix Presence to store the users in a given "challenge room"
+* Use Phoenix Presence to track who is currently typing in the shared text editor. 
+
+Let's do it!
 
 ### Setting Up Phoenix Presence
 
@@ -337,9 +357,9 @@ defmodule PhoenixPair do
 Now we're ready to start using our module to track user presence. 
 
 
-### User Joins a Channel
+### Tracking Present Users
 
-We want to use Phoenix Presence to track is the list of present users in a challenge channel. So, when a user joins a challenge channel, we will add them to Presence's list of present users. Then, we'll use Presence to make that list available to both the client who just joined _and_ the existing subscribers. 
+When a user joins a challenge channel, we will add them to Presence's list of present users. Then, we'll use Presence to make that list available to both the client who just joined _and_ the existing subscribers. 
 
 Our `ChallengeChannel` already has a `join` function that fires when a user joins the channel. We'll define an `after_join` function where we'll call on Presence to add this user to list. 
 
@@ -365,12 +385,11 @@ end
 
 Our `after_join` function has three jobs to do:
 
- * store user in our Presence store
- * broadcast out the new list of users to subscribers
- * send the list of existing users to the newly joined client
+ * Store user in our Presence store
+ * Broadcast out the new list of users to subscribers
+ * Send the list of existing users to the newly joined client
 
-#### Adding the User to the Store
-
+#### User Joins a Room
 
 Let's start with job #1, adding the user to the list of users in our Presence store. 
 
@@ -414,7 +433,7 @@ This will create a store with the following structure:
 }
 ```
 
-We'll call on our `ChallengePresence.track_user_join` function in our channel's after join function. We'll pass in an argument of the socket and the current user ID. You maybe remember that we stored our current user in our socket. That means we can access that user via `socket.assigns.current_user`. 
+We'll call on our `ChallengePresence.track_user_join` function in our channel's `after_join` function. We'll pass in an argument of the socket and the current user. You maybe remember that we stored our current user in our socket. That means we can access that user via `socket.assigns.current_user`. 
 
 ```elixir
 # challenge_channel.ex
@@ -429,7 +448,7 @@ Now that the user is added to the Presence store, we want to broadcast the updat
 #### Broadcasting the Presence List: The Presence Diff Event
 In order to broadcast our list of present users to all of the subscribing clients, we have to...do nothing!
 
-Calling `Presence.track` will automatically send a `presence_diff` event to all of the subscribing clients. It will send this event with a payload of the list of present users, grouped under top-level keys of `"joins"` and `"leaves"`
+Calling `Presence.track` will automatically broadcast a `presence_diff` event to all of the subscribing clients. It will send this event with a payload of the list of present users, grouped under top-level keys of `"joins"` and `"leaves"`
 
 ```javascript
 %{  
@@ -455,7 +474,7 @@ Calling `Presence.track` will automatically send a `presence_diff` event to all 
 
 #### Handling the Broadcast on the Client-Side
 
-We just need to teach our clients how to respond to that event. Phoenix Presence has a nice client-side offering which helps us update and display our list of present users when we receive the above payload from the server. 
+We just need to teach our clients how to respond to that event. Phoenix Presence has a nice client-side library which helps us update and display our list of present users when we receive the above payload from the server. 
 
 ```javascript
 import { Socket, Presence } from 'phoenix';
@@ -466,6 +485,8 @@ channel.on("presence_diff", (response) => {
   let participants = Presence.list(presences).map(p => {participants.push(p.metas[0])})
 })
 ```
+
+We tell our `channel` to listen for the `"presence_diff"` event. When it receives that event, it will fire a callback function with an argument of the payload broadcast from the server.
 
 The `Presence.syncDiff` function takes in the list of current present users and reconciles them with any users that left or joined. 
 
@@ -488,7 +509,7 @@ def handle_info({:after_join, challenge}, socket) do
 end
 ```
 
-Here, we're pushing the `"presence_state"` event to only the client who sent the join request. And we're sending that event with a payload of the list of present users, courtesy of the `Presence.list` function. The `list` function (you guessed it) returns the list of present users and their metadata. 
+Here, we're pushing the `"presence_state"` event to only the client who sent the join request. And we're sending that event with a payload of the list of present users, courtesy of the `PhoenixPresence.list` function. The `list` function (you guessed it) returns the list of present users and their metadata. 
 
 We can handle this on the front-end with very little code, thanks once again to the Presence client-side library. 
 
@@ -504,21 +525,26 @@ channel.on("presence_state", (response) => {
 
 It's pretty much the exact same code we used to handle the broadcast of present users to existing subscribers. The only difference is that this time we're listening for the `"presence_state"` event. 
 
-### Using Presence to Track Custom Events
+#### User Leaves a Room
 
-Now that we're using Presence to track a user's presence in a given challenge, let's use it to track a custom event: the user typing. 
+The last event that impacts user presence in a challenge channel is the departure of a user. Once again, Phoenix Presence abstracts away a lot of the work for us. All we have to do to remove a user from the Presence store and broadcast the updated list to the remaining clients is call `channel.leave()` on the front-end. 
+
+This will automatically update the Presence store's list of users and send out a `"presence_diff"` event. Since we're already listening for and handling the `"presence_diff"` event on the front-end, we don't need to write any more code to handle the "user leaves" scenario. 
+
+### Tracking User Typing
+
+Now that we're using Presence to track a user's presence in a given challenge, let's use it to track a custom event: the user typing.
 
 Our `ChallengeChannel` already handles the `"response:update"` event that fires when a user types into the shared text editor. And our Presence store already stores some metadata for a given user that indicates whether or not they are typing. 
 
-Let's hook into the `"response:update"` event to update that portion of a user's metadata in the Presence store. 
+Let's hook into the `"response:update"` event in our `ChallengeChannel` to update that portion of a user's metadata in the Presence store. 
 
 ```elixir
 # challenge_channel.ex
 
 def handle_in("response:update", %{"response" => response, "user_id" => user_id}, socket) do
     case Challenge.update(current_challenge(socket), response) do
-      {:ok, challenge}
-         ->
+      {:ok, challenge} ->
         ChallengePresence.do_user_update(socket, socket.assigns.current_user, %{typing: true})
         broadcast! socket, "response:updated", %{challenge: challenge}
         {:noreply, socket}
@@ -554,12 +580,8 @@ You might be wondering how we can broadcast this updated info to our subscribing
 
 Any calls to `Presence.update`, just like calls to `Presence.track`, will trigger a `"presence_diff"` event. We already taught our client how to listen for and respond to `"presence_diff"` events on the front-end. Good job us!
 
+## Conclusion
 
-### User Leaves
-
-The last event that impacts user presence in a challenge channel is the departure of a user. Once again, Phoenix Presence abstracts away a lot of the work for us. All we have to do to remove a user from the Presence store and broadcast the updated list to the remaining clients is call `channel.leave()` on the front-end. 
-
-This will automatically update the Presence store's list of users and send out a `"presence_diff"` event. 
 
 
 
