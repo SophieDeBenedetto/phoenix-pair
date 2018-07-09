@@ -50,7 +50,7 @@ When a client successfully establishes this connection, Phoenix Channels initial
 
 ### Broadcasting Messages
 
-A client connected to a channel via a socket will send a message to the server via the channel. Once the message is received by the channel server, it is broadcast out to the local PubSub server. This server in turn sends the message to any clients connected to the same channel topic on the same server. Then the PubSub server forwards the message to any remote PubSub servers running on other nodes in the cluster, which send the message out to their own subscribing clients. 
+A client connected to a channel via a socket will send a message to the server via the channel. Once the message is received by the channel server, it is broadcast out to the local PubSub server. This server in turn sends the message to any clients connected to the same channel topic on the same server. Then the PubSub server forwards the message to any remote PubSub servers running on other nodes in the [cluster](https://dockyard.com/blog/2016/01/28/running-elixir-and-phoenix-projects-on-a-cluster-of-nodes), which send the message out to their own subscribing clients. 
 
 Now that we have a basic idea of what Phoenix Channels are and how they work, we're ready to start building!
 
