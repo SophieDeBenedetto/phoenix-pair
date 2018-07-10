@@ -295,7 +295,7 @@ We already have the ability for users to broadcast messages to all of the client
 We'll use Phoenix Presence to store and expose this user-state-related info. 
 
 ## What is Phoenix Presence?
-The Phoenix Presence module allows us to:
+The [Phoenix Presence module](https://hexdocs.pm/phoenix/Phoenix.Presence.html) allows us to:
 
 * Store and expose topic-specific information to all of a channel's subscribing clients, across all of our application's distributed nodes. 
 * Store that information in a resilient and de-centralized manner.
@@ -592,6 +592,12 @@ You might be wondering how we can broadcast this updated info to our subscribing
 Any calls to `Presence.update`, just like calls to `Presence.track`, will trigger a `"presence_diff"` event. We already taught our client how to listen for and respond to `"presence_diff"` events on the front-end. Good job us!
 
 ## Conclusion
+
+Phoenix provides us a set of powerful tools for building real-time features, right out of the box. Both Channels and Presence have a robust set of front- and back-end modules. Phoenix Channels allow us to open a socket connection, subscribe a client to a channel and broadcast messages across that channel with ease. Phoenix Presence, on the other hand, does all the heavy lifting of maintaining user state and engagement within a channel. The front-end library provided by Presence in particular makes it easy to handle the receipt of presence-related events on the client-side with very little code. 
+
+Not only are these technologies easy to use, they support features that are fast, [fault-tolerant](https://blog.appsignal.com/2017/08/10/elixir-alchemy-supervisors-building-fault-tolerant-elixir-applications.html), allow for a [high degree of concurrency](http://phoenixframework.org/blog/the-road-to-2-million-websocket-connections), and easy to deploy across a [distributed system](https://dockyard.com/blog/2016/01/28/running-elixir-and-phoenix-projects-on-a-cluster-of-nodes). 
+
+
 
 
 
