@@ -1,5 +1,12 @@
-# Building Real-Time Features with Phoenix Channels and Presence
-In this post we'll take a deep dive into Phoenix Channels by building a real-time collaborative text-editing feature. Then, we'll use the Phoenix Presence module to track user activity within that feature. 
+# Building a Real-Time App with Phoenix
+
+More and more, users are coming to expect real-time features from the web apps they use. Whether its a chat, a live game, a shared document or a push notification, we as developers are finding ourselves needing to go beyond standard HTTP requests to support real-time functionality. 
+
+Up until recently, there have been just a handful of offerings for building such features. You may have worked with Socket.io or Action Cable, to name a few. While relatively easy to work with, these solutions are blown out of the water by the Phoenix framework. 
+
+Phoenix, the web framework for Elixir, has real-time capability out of the box. It's fast, highly concurrent (thanks to the Erlang VM), fault-tolerant and super friendly towards distributed systems. 
+
+In this post, we'll build out a real-time collaborative text-editing app, and we'll see why Phoenix should be your go-to tool for the real-time web.  
 
 ## The App
 
@@ -7,11 +14,11 @@ We're building out a Phoenix app that allows users to collaborate on coding chal
 
 Here's where our real-time feature comes in. All of the users in the challenge room should be able to see what a given user is typing *as they are typing it*. We'll leverage Phoenix Channels to support this functionality. 
 
-Not only should our users see *what* someone is typing, they should see an indication of *who* is typing it. This is where our need to track user state comes in. We'll use Phoenix Presence to build out this behavior. 
+Not only should our users see *what* someone is typing, they should see an indication of *who* is typing it. This is where our need to track user state comes in. It's not enough to simply broadcast the behavior of a given user, we need awareness of the state of any user in the challenge room. We'll use Phoenix Presence to build out this behavior. 
 
 Here's a look at the final product we're going for:
 
-VIDEO HERE.
+VIDEO DEMO HERE (coming soon.)
 
 Before we get started, let's take a brief look at our domain model. 
 
@@ -21,7 +28,7 @@ Our app is pretty simple. We have a `User` model and table and a `Challenge` mod
 
 A user can come and go from a challenge room, so there isn't an enforced relationship between users and challenges. In other words, users do not belong to challenges or vice versa. 
 
-## Part I: Real-Time Features with Phoenix Channels
+## Part I: Real-Time Text-Editing with Phoenix Channels
 
 We'll start with our first real-time feature: collaborative text-editing. Before we can use Phoenix Channels to build this feature, let's learn what they are and how they work.
 
